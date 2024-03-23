@@ -54,14 +54,26 @@ module.exports.updateBlog = async (req, res) => {
 };
 
 // Delete a blog by ID
-module.exports.deleteBlog = async (req, res) => {
+module.exports.deleteBlogConfirm = async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id);
         if (!blog) {
           return res.status(404).send('Blog not found');
         }
-        res.render('blogDelete', { blog: blog }); // Correctly pass the blog object
+        res.render('blogDelete', { blog: blog }); 
       } catch (error) {
         return res.status(500).send(error.toString());
       }
+    };
+
+    module.exports.deleteBlog = async (req, res) => {
+        try {
+            const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+            if (!deletedBlog) {
+                return res.status(404).send('Blog not found');
+            }
+            res.redirect('/blogs'); 
+        } catch (error) {
+            return res.status(500).send(error.toString());
+        }
     };
