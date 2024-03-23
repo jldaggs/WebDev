@@ -10,12 +10,8 @@ const blogSchema = new mongoose.Schema({
     blogText: {
         type: String,
         required: true
-    },
-    createdOn: {
-        type: Date,
-        default: Date.now
-    }
-});
+    }},
+    { timestamps: true });
 
 // Create a model from the schema
 const Blog = mongoose.model('Blog', blogSchema);

@@ -29,6 +29,16 @@
         </ul>
       </div>
     </nav>
+    <form action="/api/blogs/create" method="post">
+      <label for="blogTitle">Blog Title:</label>
+      <input type="text" id="blogTitle" name="blogTitle" required>
+      
+      <label for="blogText">Blog Text:</label>
+      <textarea id="blogText" name="blogText" required></textarea>
+      
+      <button type="submit">Add Blog</button>
+  </form>
+  
     <div class = content>
        <p class = intro>Blog Add is under construction. Be back soon!</p>
 
