@@ -7,7 +7,7 @@ exports.home = function(req,res) {
 module.exports.getAllBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find();
-        res.json(blogs);
+        res.render('blogList', { blogs: blogs });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
