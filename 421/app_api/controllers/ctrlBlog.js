@@ -24,7 +24,7 @@ module.exports.getBlogById = async (req, res) => {
 };
 
 // Add a new blog
-module.exports.addBlog = async (req, res) => {
+module.exports.createBlog = async (req, res) => {
     try {
         const newBlog = new Blog(req.body);
         const savedBlog = await newBlog.save();
