@@ -60,8 +60,8 @@ module.exports.updateBlogConfirm = async (req, res) => {
         if (!updatedBlog) {
             return res.status(404).send('Blog not found');
         }
-        res.redirect('/blogs/' + blogId); // Redirect to the updated blog's page, or to the blog list
-    } catch (error) {
+        res.redirect('/blogs')    
+        } catch (error) {
         console.error('Error updating the blog:', error);
         res.status(500).send('Error updating the blog');
     }
