@@ -58,10 +58,10 @@ module.exports.deleteBlog = async (req, res) => {
     try {
         const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
         if (!deletedBlog) {
-            return res.status(404).json({ error: 'Blog not found' });
+            res.render('errorView', { message: 'Blog not found' });;
         }
         res.sendStatus(204);
     } catch (error) {
-        res.status(400).json({ error: 'Failed to delete blog' });
+        res.render('errorView', { message: 'Failed to delete blog' });
     }
 };
