@@ -43,13 +43,14 @@ module.exports.createBlog = async (req, res) => {
 // Update a blog by ID
 module.exports.updateBlogForm= async (req, res) => {
     try {
-        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedBlog) {
-            return res.status(404).json({ error: 'Blog not found' });
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) {
+          return res.status(404).send('Blog not found');
         }
-        res.json(updatedBlog);
+        res.render('blogEdit', { blog: blog }); // Assuming your EJS file is named blogEdit.ejs
     } catch (error) {
-        res.status(400).json({ error: 'Failed to update blog' });
+        console.error(error);
+        res.status(500).send('Server error');
     }
 };
 module.exports.updateBlogConfirm = async (req, res) => {
