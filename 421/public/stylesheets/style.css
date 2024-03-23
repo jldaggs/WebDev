@@ -68,4 +68,16 @@ a {
   margin-left: 30px;
 }
 
+.btn-primary {
+  color: #fff;
+  background-color: darkcyan; /* Use your anchor color for the button */
+  border-color: darkcyan; /* Use your anchor color for the border */
+}
+
+.btn-primary:hover {
+  background-color: #005f60; /* Darken the color slightly on hover */
+  border-color: #004d4e; /* Darken the border color slightly on hover */
+}
+
+
 
