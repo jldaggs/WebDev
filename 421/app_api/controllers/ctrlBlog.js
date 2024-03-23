@@ -66,17 +66,19 @@ module.exports.updateBlogConfirm = async (req, res) => {
 
 // Delete a blog by ID
 module.exports.deleteBlogConfirm = async (req, res) => {
-    try {
-        const blog = await Blog.findById(req.params.id);
-        if (!blog) {
-          return res.status(404).send('Blog not found');
-        }
-        res.render('blogDelete', { blog: blog });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-      }
-    };
+    res.render('blogDelete', { blog: { blogTitle: "Test", blogText: "Test", createdAt: new Date() } });
+};
+    // try {
+    //     const blog = await Blog.findById(req.params.id);
+    //     if (!blog) {
+    //       return res.status(404).send('Blog not found');
+    //     }
+    //     res.render('blogDelete', { blog: blog });
+    // } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send('Server error');
+    //   }
+    // };
 
     module.exports.deleteBlog = async (req, res) => {
         try {
