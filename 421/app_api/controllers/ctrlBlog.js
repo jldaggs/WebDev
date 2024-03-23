@@ -1,5 +1,8 @@
 const Blog = require('../../app_server/models/blogs');
 
+exports.home = function(req,res) {
+    res.render('home', { title: 'Jillian Daggs Blog'});
+};
 // Get all blogs
 module.exports.getAllBlogs = async (req, res) => {
     try {

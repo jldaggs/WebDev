@@ -16,7 +16,7 @@ exports.blogList = (req, res) => {
         });
 };
 
-exports.blogAdd = function(req,res) {
+exports.blogCreate = function(req,res) {
     res.render('blogAdd', { title: 'Blog Add' });
 };
 exports.blogEdit = function(req,res) {
