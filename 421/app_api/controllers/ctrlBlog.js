@@ -62,7 +62,8 @@ module.exports.deleteBlogConfirm = async (req, res) => {
         }
         res.render('blogDelete', { blog: blog }); 
       } catch (error) {
-        return res.status(500).send(error.toString());
+        console.error(error);
+        res.status(500).send('Server error');
       }
     };
 
