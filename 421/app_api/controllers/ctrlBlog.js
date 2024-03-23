@@ -68,12 +68,15 @@ module.exports.deleteBlogConfirm = async (req, res) => {
 
     module.exports.deleteBlog = async (req, res) => {
         try {
-            const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+            const blogId = req.params.id; // Get the blog ID from the URL parameter
+            const deletedBlog = await Blog.findByIdAndDelete(blogId);
             if (!deletedBlog) {
                 return res.status(404).send('Blog not found');
             }
-            res.redirect('/blogs'); 
+            // Redirect to the blog list page after successful deletion
+            res.redirect('/blogs');
         } catch (error) {
-            return res.status(500).send(error.toString());
+            console.error('Error deleting the blog:', error);
+            res.status(500).send('Error deleting the blog');
         }
     };

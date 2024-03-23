@@ -3,10 +3,6 @@ const mongoose = require('mongoose');
 
 // Define the schema for a blog entry
 const blogSchema = new mongoose.Schema({
-    blogId:{
-        type: String,
-        required: true
-    },
     blogTitle: {
         type: String,
         required: true
