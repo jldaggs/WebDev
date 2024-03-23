@@ -31,7 +31,7 @@
 </nav>
 <div class="container mt-5">
     <h2 class="pageTitle">Edit Blog</h2>
-    <form action="/api/blogs/update/<%= blog._id %>" method="post" class="blog-list">
+    <form action="/api/blogs/edit/<%= blog._id %>" method="post" class="blog-list">
       <div class="form-group blog-entry">
         <label for="blogTitle" class="blog-entry-title">Blog Title:</label>
         <input type="text" id="blogTitle" name="blogTitle" value="<%= blog.blogTitle %>" class="form-control" required>
