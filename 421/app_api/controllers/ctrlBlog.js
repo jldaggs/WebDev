@@ -34,7 +34,7 @@ module.exports.createBlog = async (req, res) => {
             blogText: req.body.blogText
         });
         const savedBlog = await newBlog.save();
-        res.status(201).json(savedBlog);
+        res.redirect('/blogs')
     } catch (error) {
         res.status(400).json({ error: 'Failed to add blog' });
     }
