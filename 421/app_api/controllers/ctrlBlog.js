@@ -1,7 +1,7 @@
-const Blog = require('../models/blog');
+const Blog = require('./app_server/models/blogs');
 
 // Get all blogs
-exports.getAllBlogs = async (req, res) => {
+module.exports.getAllBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find();
         res.json(blogs);
@@ -11,7 +11,7 @@ exports.getAllBlogs = async (req, res) => {
 };
 
 // Get a single blog by ID
-exports.getBlogById = async (req, res) => {
+module.exports.getBlogById = async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id);
         if (!blog) {
@@ -24,7 +24,7 @@ exports.getBlogById = async (req, res) => {
 };
 
 // Add a new blog
-exports.addBlog = async (req, res) => {
+module.exports.addBlog = async (req, res) => {
     try {
         const newBlog = new Blog(req.body);
         const savedBlog = await newBlog.save();
@@ -35,7 +35,7 @@ exports.addBlog = async (req, res) => {
 };
 
 // Update a blog by ID
-exports.updateBlog = async (req, res) => {
+module.exports.updateBlog = async (req, res) => {
     try {
         const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedBlog) {
@@ -48,7 +48,7 @@ exports.updateBlog = async (req, res) => {
 };
 
 // Delete a blog by ID
-exports.deleteBlog = async (req, res) => {
+module.exports.deleteBlog = async (req, res) => {
     try {
         const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
         if (!deletedBlog) {

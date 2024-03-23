@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const ctrlBlogs = require('../controllers/blogs');
+const ctrlBlogs = require('../controllers/ctrlBlog');
 
-router.get('/', ctrlBlogs.getHome);
 router.get('/blogs', ctrlBlogs.getBlogList);
 router.get('/blogs/:id', ctrlBlogs.getBlogById);
 router.post('/blogs', ctrlBlogs.createBlog);
