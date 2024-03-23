@@ -41,7 +41,18 @@ module.exports.createBlog = async (req, res) => {
 };
 
 // Update a blog by ID
-module.exports.updateBlog = async (req, res) => {
+module.exports.updateBlogForm= async (req, res) => {
+    try {
+        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedBlog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+        res.json(updatedBlog);
+    } catch (error) {
+        res.status(400).json({ error: 'Failed to update blog' });
+    }
+};
+module.exports.updateBlogConfirm = async (req, res) => {
     try {
         const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedBlog) {
