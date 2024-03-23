@@ -60,8 +60,8 @@ module.exports.deleteBlogConfirm = async (req, res) => {
         if (!blog) {
           return res.status(404).send('Blog not found');
         }
-        res.render('blogDelete', { blog: blog }); 
-      } catch (error) {
+        res.render('blogDelete', { blog: blog });
+    } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
       }
