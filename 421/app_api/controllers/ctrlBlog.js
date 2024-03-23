@@ -55,13 +55,15 @@ module.exports.updateBlogForm= async (req, res) => {
 };
 module.exports.updateBlogConfirm = async (req, res) => {
     try {
-        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const blogId = req.params.id;
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
         if (!updatedBlog) {
-            return res.status(404).json({ error: 'Blog not found' });
+            return res.status(404).send('Blog not found');
         }
-        res.json(updatedBlog);
+        res.redirect('/blogs/' + blogId); // Redirect to the updated blog's page, or to the blog list
     } catch (error) {
-        res.status(400).json({ error: 'Failed to update blog' });
+        console.error('Error updating the blog:', error);
+        res.status(500).send('Error updating the blog');
     }
 };
 
