@@ -58,10 +58,13 @@ module.exports.deleteBlog = async (req, res) => {
     try {
         const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
         if (!deletedBlog) {
-            res.render('errorView', { message: 'Blog not found' });;
+            // Blog not found, render the error view
+            return res.render('errorView', { message: 'Blog not found' });
         }
-        res.sendStatus(204);
+        // Blog found and deleted, redirect to the blog list or home page
+        res.redirect('/blogs');
     } catch (error) {
+        // An error occurred, render the error view
         res.render('errorView', { message: 'Failed to delete blog' });
     }
 };
