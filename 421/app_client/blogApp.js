@@ -3,7 +3,7 @@ var app = angular.module('blogApp', ['ngRoute']);
 app.config(function($routeProvider) {
     $routeProvider
         .when('/blogs', {
-            templateUrl: '/blogs',
+            templateUrl: '/views/blogList.html',
             controller: 'blogListController'
         })
         .when('/blogs/add', {
