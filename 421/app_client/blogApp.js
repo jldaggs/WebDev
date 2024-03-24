@@ -2,10 +2,6 @@ var app = angular.module('blogApp', ['ngRoute']);
 
 app.config(function($routeProvider) {
     $routeProvider
-        .when('/', {
-            templateUrl : 'pages/home.html',
-            controller  : 'mainController'
-        })
         .when('/blogs', {
             templateUrl: '/blogs',
             controller: 'blogListController'
@@ -20,7 +16,7 @@ app.config(function($routeProvider) {
         })
         .when('/blogs/delete/:id', {
             templateUrl: '/blogs/delete/:id',
-            controller: 'BlogDeleteController'
+            controller: 'blogDeleteController'
         })
 });
 
