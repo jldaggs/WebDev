@@ -24,6 +24,7 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
     $scope.blogs = [];
 
     $http.get('/api/blog').then(function(response) {
+        console.log(response.data)
         $scope.blogs = response.data;
     }, function(error) {
         console.error('Error fetching blogs:', error);
