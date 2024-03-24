@@ -21,6 +21,8 @@ app.config(function($routeProvider) {
 });
 
 app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
+    console.log("blogListController initialized");
+
     $scope.blogs = [];
 
     $http.get('/api/blog').then(function(response) {
