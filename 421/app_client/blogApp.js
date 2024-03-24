@@ -7,15 +7,15 @@ app.config(function($routeProvider) {
             controller: 'blogListController'
         })
         .when('/blogs/add', {
-            templateUrl: '/blogs/add', 
+            templateUrl: 'views/blogAdd.html', // Path to your template file
             controller: 'blogAddController'
         })
         .when('/blogs/edit/:id', {
-            templateUrl: '/blogs/edit/:id', // Use the ID from the route parameter
+            templateUrl: 'views/blogEdit.html', // Path to your template file
             controller: 'blogEditController'
         })
         .when('/blogs/delete/:id', {
-            templateUrl: '/blogs/delete/:id',
+            templateUrl: 'views/blogDelete.html', // Path to your template file
             controller: 'blogDeleteController'
         })
 });
