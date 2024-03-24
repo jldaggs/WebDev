@@ -12,7 +12,7 @@ mongoose.connect(dbURI);
 
 // Monitor and report when database is connected
 mongoose.connection.on('connected', function () {
-    console.log('Mongoose connected to ' + dbURI);
+    console.log('Mongoose connected to ' + DB_NAME);
 });
 
 // Monitor and report error connecting to database
