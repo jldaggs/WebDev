@@ -1,0 +1,83 @@
+body {
+  padding: 0px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: darkcyan;
+}
+
+.content {
+  padding-top: 20px;
+  padding-right : 40px;
+  padding-left : 40px;
+}
+
+.pageTitle {
+  font-size: 25px;
+}
+
+.intro {
+  font-size: 20px
+}
+
+/* Add this to your stylesheet */
+
+/* Style the overall blog list container */
+.blog-list {
+  max-width: 700px; /* Adjust the width as needed */
+  margin: 20px auto 20px 5px;
+}
+
+/* Style each blog entry */
+.blog-entry {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  margin-bottom: 20px; /* Space between entries */
+  padding: 15px;
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Style the title of each blog entry */
+.blog-entry-title {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+/* Style the content of each blog entry */
+.blog-entry-content {
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+/* Style the date of each blog entry */
+.blog-entry-date {
+  font-size: 0.85em;
+  color: #6c757d;
+}
+
+/* Style the edit and delete icons */
+.blog-entry-icons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.blog-entry-icons a {
+  color: #001937;
+  text-decoration: none;
+  margin-left: 30px;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: darkcyan; /* Use your anchor color for the button */
+  border-color: darkcyan; /* Use your anchor color for the border */
+}
+
+.btn-primary:hover {
+  background-color: #005f60; /* Darken the color slightly on hover */
+  border-color: #004d4e; /* Darken the border color slightly on hover */
+}
+
+
+
