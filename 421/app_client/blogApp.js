@@ -31,13 +31,13 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
 }]);
 
 
-app.controller('blogAddController', ['$scope', '$http', function($scope, $http) {
+app.controller('blogAddController', ['$scope', '$http', '$location', function($scope, $http, $location) {
     $scope.blog = {}; // Model for the form
 
     $scope.addBlog = function() {
         $http.post('/api/blogs', $scope.blog).then(function(response) {
-            // Handle success, redirect to the blog list
-            window.location.href = '#!/blogs';
+            // Handle success, redirect to the blog list using $location
+            $location.path('/blogs');
         }, function(error) {
             // Handle error
             console.error('Error adding blog:', error);
@@ -45,7 +45,7 @@ app.controller('blogAddController', ['$scope', '$http', function($scope, $http) 
     };
 }]);
 
-app.controller('blogEditController', ['$scope', '$http', '$routeParams', function($scope, $http, $routeParams) {
+app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
     $scope.blog = {};
 
     $http.get('/api/blogs/' + $routeParams.id).then(function(response) {
@@ -56,8 +56,8 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', functio
 
     $scope.saveChanges = function() {
         $http.put('/api/blogs/' + $scope.blog._id, $scope.blog).then(function(response) {
-            // Navigate back to the blog list 
-            window.location.href = '#!/blogs';
+            // Navigate back to the blog list using $location
+            $location.path('/blogs');
         }, function(error) {
             console.error('Error updating blog:', error);
         });
