@@ -7,7 +7,7 @@ exports.home = function(req,res) {
 module.exports.getAllBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find();
-        res.render('blogList', { blogs: blogs });
+        res.json(blogs); // Return blogs as JSON
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -29,69 +29,35 @@ module.exports.getBlogById = async (req, res) => {
 // Add a new blog
 module.exports.createBlog = async (req, res) => {
     try {
-        const newBlog = new Blog({
-            blogTitle: req.body.blogTitle,
-            blogText: req.body.blogText
-        });
+        const newBlog = new Blog(req.body);
         const savedBlog = await newBlog.save();
-        res.redirect('/blogs')
+        res.status(201).json(savedBlog); // Return the saved blog
     } catch (error) {
         res.status(400).json({ error: 'Failed to add blog' });
     }
 };
 
-// Update a blog by ID
-module.exports.updateBlogForm= async (req, res) => {
-    try {
-        const blog = await Blog.findById(req.params.id);
-        if (!blog) {
-          return res.status(404).send('Blog not found');
-        }
-        res.render('blogEdit', { blog: blog }); // Assuming your EJS file is named blogEdit.ejs
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    }
-};
-module.exports.updateBlogConfirm = async (req, res) => {
+
+module.exports.updateBlog = async (req, res) => {
     try {
         const blogId = req.params.id;
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
         if (!updatedBlog) {
-            return res.status(404).send('Blog not found');
+            return res.status(404).json({ error: 'Blog not found' });
         }
-        res.redirect('/blogs')    
-        } catch (error) {
-        console.error('Error updating the blog:', error);
-        res.status(500).send('Error updating the blog');
+        res.json(updatedBlog); // Return the updated blog
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating the blog' });
     }
 };
 
-// Delete a blog by ID
-module.exports.deleteBlogConfirm = async (req, res) => {
-    try {
-        const blog = await Blog.findById(req.params.id);
-        if (!blog) {
-          return res.status(404).send('Blog not found');
-        }
-        res.render('blogDelete', { blog: blog });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-      }
-    };
 
     module.exports.deleteBlog = async (req, res) => {
         try {
-            const blogId = req.params.id; // Get the blog ID from the URL parameter
-            const deletedBlog = await Blog.findByIdAndDelete(blogId);
-            if (!deletedBlog) {
-                return res.status(404).send('Blog not found');
-            }
-            // Redirect to the blog list page after successful deletion
-            res.redirect('/blogs');
+            const blogId = req.params.id;
+            await Blog.findByIdAndDelete(blogId);
+            res.json({ message: 'Blog successfully deleted' });
         } catch (error) {
-            console.error('Error deleting the blog:', error);
-            res.status(500).send('Error deleting the blog');
+            res.status(500).json({ error: 'Error deleting the blog' });
         }
     };

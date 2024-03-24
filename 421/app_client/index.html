@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="blogApp">
+<head>
+    <!-- Head contents like meta tags, title, and CSS links -->
+</head>
+<body>
+
+    <!-- Navigation and other shared page elements -->
+    <li class="nav-item">
+        <a class="nav-link" href="#!/blogs/add">Blog Add</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#!/blogs">Blog List</a>
+    </li>
+
+    <!-- Placeholder for dynamic view content -->
+    <div ng-view></div>
+
+
+        <!-- Inline Template for blogList -->
+    <script type="text/ng-template" id="/blogs">
+        <div class="container mt-5" ng-controller="blogListController">
+            <div class="blog-list">
+                <div class="blog-entry" ng-repeat="blog in blogs">
+                    <div class="blog-entry-title">
+                        {{ blog.blogTitle }}
+                    </div>
+                    <div class="blog-entry-content">
+                        {{ blog.blogText }}
+                    </div>
+                    <div class="blog-entry-date">
+                        Posted on: {{ blog.createdAt | date:'mediumDate' }}
+                    </div>
+                    <div class="blog-entry-icons">
+                        <a href="#!/blogs/edit/{{ blog._id }}">
+                            <i class="fa-solid fa-pen-to-square fa-2xl"></i>
+                        </a>
+                        <a href="#!/blogs/delete/{{ blog._id }}">
+                            <i class="fa-solid fa-trash fa-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+        <!-- Inline Template for blogAddd -->
+    <script type="text/ng-template" id="/blogs/add">
+        <div class="container mt-5" ng-controller="blogAddController">
+            <h2 class="pageTitle">Add a New Blog</h2>
+            <form ng-submit="addBlog()">
+                <div class="form-group">
+                    <label>Blog Title:</label>
+                    <input type="text" ng-model="blog.blogTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Blog Text:</label>
+                    <textarea ng-model="blog.blogText" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Blog</button>
+                <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </script>
+        <!-- Inline Template for blogEdit -->
+    <script type="text/ng-template" id="/blogs/edit/:id">
+        <div class="container mt-5" ng-controller="blogEditController">
+            <h2 class="pageTitle">Edit Blog</h2>
+            <form ng-submit="saveChanges()">
+              <div class="form-group blog-entry">
+                <label for="blogTitle" class="blog-entry-title">Blog Title:</label>
+                <input type="text" id="blogTitle" ng-model="blog.blogTitle" class="form-control" required>
+              </div>
+              
+              <div class="form-group blog-entry">
+                <label for="blogText" class="blog-entry-title">Blog Text:</label>
+                <textarea id="blogText" ng-model="blog.blogText" class="form-control blog-entry-content" rows="5" required></textarea>
+              </div>
+
+              <div class="blog-entry-icons">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+        </div>
+    </script>
+        <!-- Inline Template for blogDelete -->
+    <script type="text/ng-template" id="/blogs/delete/:id">
+        <div class="container mt-5" ng-controller="blogDeleteController">
+            <h2 class="pageTitle">Delete Blog</h2>
+            <div class="form-group blog-entry">
+                <div class="blog-entry-title">
+                    {{ blog.blogTitle }}
+                </div>
+                <div class="blog-entry-content">
+                    {{ blog.blogText }}
+                </div>    
+                <div class="blog-entry-date">
+                    Posted on: {{ blog.createdAt | date:'mediumDate' }}
+                </div>
+            </div>
+            <div class="blog-entry-icons">
+                <button type="button" class="btn btn-danger" ng-click="deleteBlog(blog._id)">Delete Blog</button>
+                <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </script>
+
+
+    <!-- AngularJS, Angular Route Script, and Your App's Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <script src="path/to/your/app.js"></script>
+</body>
+</html>
+
