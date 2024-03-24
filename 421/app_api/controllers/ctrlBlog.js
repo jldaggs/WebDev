@@ -13,18 +13,18 @@ module.exports.getAllBlogs = async (req, res) => {
     }
 };
 
-// // Get a single blog by ID
-// module.exports.getBlogById = async (req, res) => {
-//     try {
-//         const blog = await Blog.findById(req.params.id);
-//         if (!blog) {
-//             return res.status(404).json({ error: 'Blog not found' });
-//         }
-//         res.json(blog);
-//     } catch (error) {
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
+// Get a single blog by ID
+module.exports.getBlogById = async (req, res) => {
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+        res.json(blog);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 // Add a new blog
 module.exports.createBlog = async (req, res) => {
