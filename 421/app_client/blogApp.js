@@ -3,22 +3,25 @@ console.log("AngularJS module loaded:", app);
 
 app.config(function($routeProvider) {
     $routeProvider
-        .when('#!/blogs', {
-            templateUrl: '/views/blogList.html',
+        .when('/blogs', {
+            templateUrl: 'views/blogList.html',
             controller: 'blogListController'
         })
-        .when('#!/blogs/add', {
+        .when('/blogs/add', {
             templateUrl: 'views/blogAdd.html', 
             controller: 'blogAddController'
         })
-        .when('#!/blogs/edit/:id', {
+        .when('/blogs/edit/:id', {
             templateUrl: 'views/blogEdit.html',
             controller: 'blogEditController'
         })
-        .when('#!/blogs/delete/:id', {
+        .when('/blogs/delete/:id', {
             templateUrl: 'views/blogDelete.html',
             controller: 'blogDeleteController'
         })
+        .otherwise({
+            redirectTo: '/blogs'
+        });
 });
 
 app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
@@ -41,7 +44,7 @@ app.controller('blogAddController', ['$scope', '$http', '$location', function($s
     $scope.addBlog = function() {
         $http.post('/api/blog', $scope.blog).then(function(response) {
             // Handle success, redirect to the blog list using $location
-            $location.path('#!/blogs');
+            $location.path('/blogs');
         }, function(error) {
             // Handle error
             console.error('Error adding blog:', error);
@@ -61,7 +64,7 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
     $scope.saveChanges = function() {
         $http.put('/api/blog/' + $scope.blog._id, $scope.blog).then(function(response) {
             // Navigate back to the blog list using $location
-            $location.path('#!/blogs');
+            $location.path('/blogs');
         }, function(error) {
             console.error('Error updating blog:', error);
         });
@@ -79,7 +82,7 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
     $scope.deleteBlog = function(id) {
         $http.delete('/api/blog/' + id).then(function(response) {
             // After successful deletion, redirect to the blog list
-            $location.path('#!/blogs');
+            $location.path('/blogs');
         }, function(error) {
             console.error('Error deleting blog:', error);
         });
