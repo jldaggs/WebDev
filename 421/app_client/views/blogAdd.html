@@ -1,0 +1,18 @@
+<div class="container mt-5" ng-controller="blogAddController">
+  <h2 class="pageTitle">Add a New Blog</h2>
+  <form ng-submit="addBlog()">
+      <div class="form-group">
+          <label>Blog Title:</label>
+          <input type="text" ng-model="blog.blogTitle" class="form-control" required>
+      </div>
+      <div class="form-group">
+          <label>Blog Text:</label>
+          <textarea ng-model="blog.blogText" class="form-control" rows="5" required></textarea>
+      </div>
+      <div class="blog-entry-icons">
+          <button type="submit" class="btn btn-primary">Add Blog</button>
+          <!-- Cancel button/link -->
+          <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+      </div>
+  </form>
+</div>

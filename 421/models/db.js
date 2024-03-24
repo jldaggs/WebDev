@@ -7,12 +7,13 @@ require('dotenv').config({ path: './config.env' });
 var dbURI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}` +
     `@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
+var name  = process.env.DB_USER
 // Connect to MongoDB
 mongoose.connect(dbURI);
 
 // Monitor and report when database is connected
 mongoose.connection.on('connected', function () {
-    console.log('Mongoose connected to ' + dbURI);
+    console.log('Mongoose connected to ' + name);
 });
 
 // Monitor and report error connecting to database

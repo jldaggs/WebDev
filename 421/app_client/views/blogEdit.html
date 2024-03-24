@@ -1,0 +1,23 @@
+<div class="container mt-5" ng-controller="blogEditController">
+  <h2 class="pageTitle">Edit Blog</h2>
+  <form ng-submit="saveChanges()" class="blog-list">
+      <div class="form-group blog-entry">
+          <label for="blogTitle" class="blog-entry-title">Blog Title:</label>
+          <input type="text" id="blogTitle" ng-model="blog.blogTitle" class="form-control" required>
+      </div>
+      
+      <div class="form-group blog-entry">
+          <label for="blogText" class="blog-entry-title">Blog Text:</label>
+          <textarea id="blogText" ng-model="blog.blogText" class="form-control blog-entry-content" rows="5" required></textarea>
+      </div>
+      
+      <!-- Hidden ID Field -->
+      <input type="hidden" ng-model="blog._id">
+      
+      <div class="blog-entry-icons">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <!-- Cancel button/link -->
+          <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+      </div>
+  </form>
+</div>

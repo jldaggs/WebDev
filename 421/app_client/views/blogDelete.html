@@ -1,0 +1,20 @@
+<div class="container mt-5" ng-controller="blogDeleteController">
+    <h2 class="pageTitle">Delete Blog</h2>
+    <div class="form-group blog-entry">
+        <div class="blog-entry-title">
+            {{ blog.blogTitle }}
+        </div>
+        <div class="blog-entry-content">
+            {{ blog.blogText }}
+        </div>    
+        <div class="blog-entry-date">
+            Posted on: {{ blog.createdAt | date:'mediumDate' }}
+        </div>
+    </div>
+    <div class="blog-entry-icons">
+        <!-- Use ng-click to trigger deleteBlog function -->
+        <button type="button" class="btn btn-danger" ng-click="deleteBlog(blog._id)">Delete Blog</button>
+        <!-- Cancel button/link -->
+        <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>

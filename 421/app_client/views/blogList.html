@@ -1,0 +1,25 @@
+<div ng-app="blogApp" ng-controller="blogListController">
+  <div class="blog-list">
+      <div class="blog-entry" ng-repeat="blog in blogs">
+        <div class="blog-entry-title">
+          {{ blog.blogTitle }}
+        </div>
+        <div class="blog-entry-content">
+          {{ blog.blogText }}
+        </div>
+        <div class="blog-entry-date">
+          Posted on: {{ blog.createdAt | date:'mediumDate' }}
+        </div>
+        <div class="blog-entry-icons">
+          <!-- Icons or buttons for edit and delete actions -->
+          <a ng-href="#!/blogs/edit/{{ blog._id }}">
+            <i class="fa-solid fa-pen-to-square fa-2xl"></i>
+        </a>
+        <a ng-href="#!/blogs/delete/{{ blog._id }}">
+            <i class="fa-solid fa-trash fa-2xl"></i>
+        </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
