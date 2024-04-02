@@ -1,4 +1,4 @@
-const Blog = require('./models/blogs');
+const Blog = require('../models/blogs');
 
 exports.home = function(req,res) {
     res.render('home', { title: 'Jillian Daggs Blog'});
