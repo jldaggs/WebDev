@@ -1,4 +1,4 @@
-var mongoose = require( 'mongoose' );
+const mongoose = require( 'mongoose' );
 mongoose.set('useNewUrlParser', true);    // Included to avoid warnings
 mongoose.set('useFindAndModify', false);  // Included to avoid warnings
 mongoose.set('useCreateIndex', true);     // Included to avoid warnings
@@ -6,7 +6,7 @@ var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 
 // Users Schema
-var userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
@@ -44,5 +44,5 @@ userSchema.methods.generateJwt = function() {
     exp: parseInt(expiry.getTime() / 1000),
   }, config.env.JWT_SECRET); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };
-
-mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;
