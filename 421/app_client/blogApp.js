@@ -42,7 +42,7 @@ app.controller('blogAddController', ['$scope', '$http', '$location', function($s
     $scope.blog = {}; // Model for the form
 
     $scope.addBlog = function() {
-        $http.post('/api/blog', $scope.blog).then(function(response) {
+        $http.post('/api/blog', $scope.blog, { headers: { Authorization: 'Bearer '+ authentication.getToken() }}).then(function(response) {
             // Handle success, redirect to the blog list using $location
             $location.path('/blogs');
         }, function(error) {
@@ -62,7 +62,7 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
     });
 
     $scope.saveChanges = function() {
-        $http.put('/api/blog/' + $scope.blog._id, $scope.blog).then(function(response) {
+        $http.put('/api/blog/' + $scope.blog._id, $scope.blog, { headers: { Authorization: 'Bearer '+ authentication.getToken() }}).then(function(response) {
             // Navigate back to the blog list using $location
             $location.path('/blogs');
         }, function(error) {
