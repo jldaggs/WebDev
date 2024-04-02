@@ -1,4 +1,4 @@
-var app = angular.module('bloggerApp');
+var app = angular.module('blogApp');
 
 //*** Authentication Service and Methods **
 app.service('authentication', authentication);
