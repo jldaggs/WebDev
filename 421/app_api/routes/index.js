@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-var jwt = require('express-jwt'); 
-var auth = jwt({   // Lab 6
+const expressJwt = require('express-jwt');
+const auth = expressJwt({
   secret: process.env.JWT_SECRET,
+  algorithms: ['HS256'], // Important: Specify algorithms to use
   userProperty: 'payload'
 });
 const ctrlBlogs = require('../controllers/ctrlBlog');
