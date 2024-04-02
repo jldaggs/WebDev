@@ -1,5 +1,6 @@
 // Require Mongoose
 var mongoose = require('mongoose');
+require('./users');
 // Require dotenv and specify the custom path to your config.env
 require('dotenv').config({ path: './config.env' });
 
