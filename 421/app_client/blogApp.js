@@ -37,6 +37,12 @@ app.config(['$routeProvider', function($routeProvider) {
 app.factory('AuthService', ['$window', function($window) {
     var authToken = null;
 
+    function parseToken(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(base64));
+    }    
+    
     return {
         saveToken: function(token) {
             $window.localStorage['blog-app-token'] = token;
