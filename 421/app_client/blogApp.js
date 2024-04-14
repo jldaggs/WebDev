@@ -48,9 +48,21 @@ app.factory('AuthService', ['$window', function($window) {
             }
             return authToken;
         },
+        getUserEmail: function() {
+            var token = this.getToken();
+            if (token) {
+                var decoded = parseToken(token);
+                return decoded.email; 
+            }
+            return null;
+        },
         isLoggedIn: function() {
             var token = this.getToken();
-            return !!token;
+            if (token) {
+                var decoded = parseToken(token);
+                return !!decoded.email; 
+            }
+            return false;
         },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
