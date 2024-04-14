@@ -82,7 +82,7 @@ app.factory('AuthService', ['$window', function($window) {
 }]);
 
 // Controllers for blog operations
-app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
+app.controller('blogListController', ['$scope', '$http', 'AuthService', function($scope, $http, AuthService) {
     $scope.blogs = [];
     $scope.currentUserId = AuthService.getUserId(); // Ensure AuthService can extract the user ID
 

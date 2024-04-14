@@ -30,7 +30,6 @@ module.exports.getBlogById = async (req, res) => {
 // Add a new blog
 module.exports.createBlog = async (req, res) => {
     try {
-        console.log("User ID from token:", req.userId);
         const newBlog = new Blog({
             blogTitle: req.body.blogTitle,
             blogText: req.body.blogText,
