@@ -1,7 +1,7 @@
-const Blog = require('../../../../pat/WebDev/421/models/blogs');
+const Blog = require('../../../../WebDev/421/models/blogs');
 
 exports.home = function(req,res) {
-    res.render('home', { title: 'Patrick McCullough Blog'});
+    res.render('home', { title: 'Jillian Daggs Blog'});
 };
 // Get all blogs
 module.exports.getAllBlogs = async (req, res) => {
