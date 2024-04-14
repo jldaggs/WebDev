@@ -70,7 +70,7 @@ app.factory('AuthService', ['$window', function($window) {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
         },
-        getUserID: function() {
+        getUserId: function() {
             var token = this.getToken();
             if (token) {
                 var decoded = parseToken(token);
