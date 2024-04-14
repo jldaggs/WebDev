@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const User = require('../../../../WebDev/421/models/User'); 
 
 const register = async (req, res) => {
-    const user = new User({ email: req.body.email, password: req.body.password });
+    const user = new User({ name: req.body.name, email: req.body.email, password: req.body.password });
     try {
         const savedUser = await user.save();
         res.status(201).send({ message: "User created successfully", userId: savedUser._id });
