@@ -30,12 +30,12 @@ module.exports.getBlogById = async (req, res) => {
 // Add a new blog
 module.exports.createBlog = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1]; 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+        console.log("User ID from token:", req.userId);
         const newBlog = new Blog({
-            ...req.body,
-            author: decoded.userId 
+            const newBlog = new Blog({
+                blogTitle: req.body.blogTitle,
+                blogText: req.body.blogText,
+                blogAuthor: req.userId // Ensure this matches the decoded token
         });
 
         const savedBlog = await newBlog.save();
