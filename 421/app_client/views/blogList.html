@@ -10,14 +10,14 @@
         <div class="blog-entry-date">
           Posted on: {{ blog.createdAt | date:'mediumDate' }}
         </div>
-        <div class="blog-entry-icons">
+        <div class="blog-entry-icons" ng-show="AuthService.isLoggedIn()">
           <!-- Icons or buttons for edit and delete actions -->
           <a ng-href="#!/blogs/edit/{{ blog._id }}">
             <i class="fa-solid fa-pen-to-square fa-2xl"></i>
-        </a>
-        <a ng-href="#!/blogs/delete/{{ blog._id }}">
+          </a>
+          <a ng-href="#!/blogs/delete/{{ blog._id }}">
             <i class="fa-solid fa-trash fa-2xl"></i>
-        </a>
+          </a>
         </div>
       </div>
     </div>
