@@ -58,11 +58,7 @@ app.factory('AuthService', ['$window', function($window) {
         },
         isLoggedIn: function() {
             var token = this.getToken();
-            if (token) {
-                var decoded = parseToken(token);
-                return !!decoded.email; 
-            }
-            return false;
+            return !!token;
         },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
