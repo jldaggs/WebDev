@@ -10,6 +10,11 @@ const blogSchema = new mongoose.Schema({
     blogText: {
         type: String,
         required: true
+    },
+    blogAuthor: {
+        type: mongoose.Schema.Types.ObjectId, // Reference to User model
+        ref: 'User',
+        required: true
     }},
     { timestamps: true });
 

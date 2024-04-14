@@ -8,9 +8,9 @@
           {{ blog.blogText }}
         </div>
         <div class="blog-entry-date">
-          Posted on: {{ blog.createdAt | date:'mediumDate' }}
+          Posted by {{ blog.createdAt | date:'mediumDate' }}
         </div>
-        <div class="blog-entry-icons" ng-show="AuthService.isLoggedIn()">
+        <div class="blog-entry-icons" ng-show="blog.isCurrentUserAuthor">
           <!-- Icons or buttons for edit and delete actions -->
           <a ng-href="#!/blogs/edit/{{ blog._id }}">
             <i class="fa-solid fa-pen-to-square fa-2xl"></i>

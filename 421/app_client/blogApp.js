@@ -69,17 +69,29 @@ app.factory('AuthService', ['$window', function($window) {
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
+        },
+        getUserID: function() {
+            var token = this.getToken();
+            if (token) {
+                var decoded = parseToken(token);
+                return decoded.userId; // Assuming the JWT includes userId
+            }
+            return null;
         }
     };
 }]);
 
 // Controllers for blog operations
 app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
-    console.log("blogListController initialized");
     $scope.blogs = [];
+    $scope.currentUserId = AuthService.getUserId(); // Ensure AuthService can extract the user ID
+
     $http.get('/api/blog').then(function(response) {
-        console.log(response.data);
-        $scope.blogs = response.data;
+        $scope.blogs = response.data.map(blog => ({
+            ...blog,
+            // Add a flag to check if the current user is the author
+            isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
+        }));
     }, function(error) {
         console.error('Error fetching blogs:', error);
     });
@@ -104,9 +116,11 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
         console.error('Error fetching blog:', error);
     });
     $scope.saveChanges = function() {
-        $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-            $location.path('/blogs');
-        }, function(error) {
+        $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {$location.path('/blogs');}, function(error) {
+            if (error.status === 403) {
+                alert('Unauthorized: You can only edit your own posts.');
+            }
             console.error('Error updating blog:', error);
         });
     };
@@ -122,6 +136,9 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
         $http.delete('/api/blog/' + id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
             $location.path('/blogs');
         }, function(error) {
+            if (error.status === 403) {
+                alert('Unauthorized: You can only delete your own posts.');
+            }
             console.error('Error deleting blog:', error);
         });
     };

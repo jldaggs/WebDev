@@ -1,4 +1,5 @@
 const Blog = require('../../../../WebDev/421/models/blogs');
+const jwt = require('jsonwebtoken');
 
 exports.home = function(req,res) {
     res.render('home', { title: 'Jillian Daggs Blog'});
@@ -6,7 +7,7 @@ exports.home = function(req,res) {
 // Get all blogs
 module.exports.getAllBlogs = async (req, res) => {
     try {
-        const blogs = await Blog.find();
+        const blogs = await Blog.find().populate('blogAuthor', 'name');
         res.json(blogs); // Return blogs as JSON
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
@@ -29,10 +30,18 @@ module.exports.getBlogById = async (req, res) => {
 // Add a new blog
 module.exports.createBlog = async (req, res) => {
     try {
-        const newBlog = new Blog(req.body);
+        const token = req.headers.authorization.split(' ')[1]; 
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const newBlog = new Blog({
+            ...req.body,
+            author: decoded.userId 
+        });
+
         const savedBlog = await newBlog.save();
         res.status(201).json(savedBlog); // Return the saved blog
     } catch (error) {
+        console.log(error);
         res.status(400).json({ error: 'Failed to add blog' });
     }
 };
@@ -40,11 +49,20 @@ module.exports.createBlog = async (req, res) => {
 
 module.exports.updateBlog = async (req, res) => {
     try {
+        const token = req.headers.authorization.split(' ')[1]; // Assuming Bearer token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const blogId = req.params.id;
-        const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
-        if (!updatedBlog) {
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
+
+        if (blog.author.toString() !== decoded.userId) {
+            return res.status(403).json({ error: 'Unauthorized to update this blog' });
+        }
+
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
         res.json(updatedBlog); // Return the updated blog
     } catch (error) {
         res.status(500).json({ error: 'Error updating the blog' });
@@ -52,12 +70,24 @@ module.exports.updateBlog = async (req, res) => {
 };
 
 
-    module.exports.deleteBlog = async (req, res) => {
-        try {
-            const blogId = req.params.id;
-            await Blog.findByIdAndDelete(blogId);
-            res.json({ message: 'Blog successfully deleted' });
-        } catch (error) {
-            res.status(500).json({ error: 'Error deleting the blog' });
+module.exports.deleteBlog = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]; // Assuming Bearer token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const blogId = req.params.id;
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
         }
-    };
+
+        if (blog.author.toString() !== decoded.userId) {
+            return res.status(403).json({ error: 'Unauthorized to delete this blog' });
+        }
+
+        await Blog.findByIdAndDelete(blogId);
+        res.json({ message: 'Blog successfully deleted' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting the blog' });
+    }
+};
