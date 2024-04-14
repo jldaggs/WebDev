@@ -2,7 +2,7 @@
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../../../../pat/WebDev/421/models/User'); // Adjust the path as necessary
+const User = require('../../../../WebDev/421/models/User'); 
 
 const register = async (req, res) => {
     const user = new User({ email: req.body.email, password: req.body.password });
