@@ -32,16 +32,15 @@ module.exports.createBlog = async (req, res) => {
     try {
         console.log("User ID from token:", req.userId);
         const newBlog = new Blog({
-            const newBlog = new Blog({
-                blogTitle: req.body.blogTitle,
-                blogText: req.body.blogText,
-                blogAuthor: req.userId // Ensure this matches the decoded token
+            blogTitle: req.body.blogTitle,
+            blogText: req.body.blogText,
+            blogAuthor: req.userId // Ensure this matches the decoded token
         });
-
+    
         const savedBlog = await newBlog.save();
-        res.status(201).json(savedBlog); // Return the saved blog
+        res.status(201).json(savedBlog);
     } catch (error) {
-        console.log(error);
+        console.log("Error in creating blog:", error);
         res.status(400).json({ error: 'Failed to add blog' });
     }
 };
