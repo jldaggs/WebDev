@@ -1,26 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { expressjwt: expressJwt } = require('express-jwt');
-const auth = expressJwt({
-  secret: process.env.JWT_SECRET,
-  algorithms: ['HS256'], // Important: Specify algorithms to use
-  userProperty: 'payload'
-});
 const ctrlBlogs = require('../controllers/ctrlBlog');
-var ctrlAuth = require('../controllers/authentication');
+const { verifyToken } = require('../middleware/authJwt');
+const authController = require('../controllers/authController');
 
 router.get('/blog', ctrlBlogs.getAllBlogs);
 
 router.get('/blog/:id', ctrlBlogs.getBlogById);
 
-router.post('/blog', auth, ctrlBlogs.createBlog); 
+router.post('/blog', verifyToken, ctrlBlogs.createBlog); // Secured
 
-router.put('/blog/:id', auth, ctrlBlogs.updateBlog); 
+router.put('/blog/:id', verifyToken, ctrlBlogs.updateBlog); // Secured
 
-router.delete('/blog/:id', ctrlBlogs.deleteBlog); 
+router.delete('/blog/:id', verifyToken, ctrlBlogs.deleteBlog); // Secured
 
-router.post('/register', ctrlAuth.register); 
-
-router.post('/login', ctrlAuth.login);  
+router.post('/register', authController.register);
+router.post('/login', authController.login);
 
 module.exports = router;
