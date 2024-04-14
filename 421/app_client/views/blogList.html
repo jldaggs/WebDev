@@ -8,7 +8,7 @@
           {{ blog.blogText }}
         </div>
         <div class="blog-entry-date">
-          Posted by {{ blog.createdAt | date:'mediumDate' }}
+          Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}
         </div>
         <div class="blog-entry-icons" ng-show="blog.isCurrentUserAuthor">
           <!-- Icons or buttons for edit and delete actions -->
