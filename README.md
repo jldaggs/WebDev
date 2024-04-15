@@ -1,5 +1,9 @@
 # WebDev
->## Lab 6 (main)
+>## Lab 7 (main)
+>-Made it so that only the author of a post can edit or delete it
+>
+>-Author name now shows in the 'created on' section of a post 
+>## Lab 6 (viewable of branch Lab6)
 >-Added accounts and a Login and Register page
 >
 >-Only logged in users can update and delete blog posts
