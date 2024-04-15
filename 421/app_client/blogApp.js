@@ -104,19 +104,18 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
             $location.path('/blogs');
         }, function(error) {
             console.error('Error adding blog:', error);
+            $scope.errorMessage = "Error adding blog" + error.data.error;
         });
     };
 }]);
 
 app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
     $scope.blog = {};
-    
-    // Fetch the blog details for editing
     $http.get('/api/blog/' + $routeParams.id).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
-        alert('Failed to load the blog for editing.');
+        $scope.errorMessage ='Failed to load the blog for editing.';
     });
 
     // Function to save changes to the blog
@@ -124,14 +123,13 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
         $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {
             headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
         }).then(function(response) {
-            alert('Blog updated successfully.');
-            $location.path('/blogs'); // Redirect to blog list
+            $location.path('/blogs'); 
         }, function(error) {
             console.error('Error updating blog:', error);
             if (error.status === 403) {
-                alert('Unauthorized: You can only edit your own posts.');
+                $scope.errorMessage = 'Unauthorized: You can only edit your own posts.';
             } else {
-                alert('Failed to update the blog. Please try again.');
+                $scope.errorMessage = 'Failed to update the blog. Please try again.';
             }
         });
     };
@@ -143,7 +141,7 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
             $scope.blog = response.data;
         }, function(error) {
             console.error('Error fetching blog:', error);
-            alert('Failed to load blog: ' + error.data.error);
+            $scope.errorMessage= 'Failed to load blog: ' + error.data.error;
         });
     };
 
@@ -153,8 +151,8 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
             }).then(function(response) {
                 $location.path('/blogs'); // Redirect after delete
             }, function(error) {
-                console.error('Error deleting blog:', error.data.error);
-                alert('Failed to delete blog: ' + error.data.error);
+                $scope.errorMessage = 'Error deleting blog:', error.data.error;
+                $scope.errorMessage = 'Failed to delete blog: ' + error.data.error;
             });
     };
 
