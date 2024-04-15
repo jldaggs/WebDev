@@ -79,5 +79,13 @@ a {
   border-color: #032652; 
 }
 
-
+.btn-secondary {
+  color: #fff;
+  background-color: #79828d;
+  border-color: #79828d;
+}
+.btn-secondary:hover {
+  background-color: #5d646d; 
+  border-color: #5d646d; 
+}
 
