@@ -20,6 +20,8 @@ const verifyToken = (req, res, next) => {
         if (err) {
             return res.status(401).send({ message: "Unauthorized!" });
         }
+        
+        console.log("Decoded token:", decoded);
         req.userId = decoded.userId;
         next();
     });

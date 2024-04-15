@@ -34,7 +34,7 @@ app.config(['$routeProvider', function($routeProvider) {
 }]);
 
 // AuthService for managing authentication
-app.factory('AuthService', ['$window', function($window) {
+app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
     var authToken = null;
 
     function parseToken(token) {
@@ -65,25 +65,50 @@ app.factory('AuthService', ['$window', function($window) {
         isLoggedIn: function() {
             var token = this.getToken();
             return !!token;
+
+        },
+        getUserId: function() {
+            var token = this.getToken();
+            if (token) {
+                var payload = parseToken(token);
+                return payload.userId; 
+            }
+            return null;
         },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
-        }
+            $rootScope.$broadcast('authChange');
+        },
     };
 }]);
 
 // Controllers for blog operations
-app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
-    console.log("blogListController initialized");
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
     $scope.blogs = [];
-    $http.get('/api/blog').then(function(response) {
-        console.log(response.data);
-        $scope.blogs = response.data;
-    }, function(error) {
-        console.error('Error fetching blogs:', error);
+    $scope.currentUserId = AuthService.getUserId(); 
+
+    function loadBlogs() {
+        $http.get('/api/blog').then(function(response) {
+            $scope.blogs = response.data.map(blog => ({
+                ...blog,
+                isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
+            }));
+        }, function(error) {
+            console.error('Error fetching blogs:', error);
+        });
+    }
+
+  
+    loadBlogs();
+
+
+    $rootScope.$on('authChange', function() {
+        $scope.currentUserId = AuthService.getUserId(); 
+        loadBlogs(); 
     });
 }]);
+
 
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
@@ -92,6 +117,7 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
             $location.path('/blogs');
         }, function(error) {
             console.error('Error adding blog:', error);
+            $scope.errorMessage = "Error adding blog" + error.data.error;
         });
     };
 }]);
@@ -102,29 +128,48 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
+        $scope.errorMessage ='Failed to load the blog for editing.';
     });
+
+    // Function to save changes to the blog
     $scope.saveChanges = function() {
-        $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-            $location.path('/blogs');
+        $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+        }).then(function(response) {
+            $location.path('/blogs'); 
         }, function(error) {
             console.error('Error updating blog:', error);
+            if (error.status === 403) {
+                $scope.errorMessage = 'Unauthorized: You can only edit your own posts.';
+            } else {
+                $scope.errorMessage = 'Failed to update the blog. Please try again.';
+            }
         });
     };
 }]);
 
 app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    $http.get('/api/blog/' + $routeParams.id).then(function(response) {
-        $scope.blog = response.data;
-    }, function(error) {
-        console.error('Error fetching blog:', error);
-    });
-    $scope.deleteBlog = function(id) {
-        $http.delete('/api/blog/' + id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-            $location.path('/blogs');
+    $scope.loadBlogDetails = function() {
+        $http.get('/api/blog/' + $routeParams.id).then(function(response) {
+            $scope.blog = response.data;
         }, function(error) {
-            console.error('Error deleting blog:', error);
+            console.error('Error fetching blog:', error);
+            $scope.errorMessage= 'Failed to load blog: ' + error.data.error;
         });
     };
+
+    $scope.deleteBlog = function() {
+            $http.delete('/api/blog/' + $routeParams.id, {
+                headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+            }).then(function(response) {
+                $location.path('/blogs'); // Redirect after delete
+            }, function(error) {
+                $scope.errorMessage = 'Error deleting blog:', error.data.error;
+                $scope.errorMessage = 'Failed to delete blog: ' + error.data.error;
+            });
+    };
+
+    $scope.loadBlogDetails();
 }]);
 
 // Controllers for user authentication
