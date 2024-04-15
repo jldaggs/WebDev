@@ -127,15 +127,29 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
 }]);
 
 app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    $http.get('/api/blog/' + $routeParams.id).then(function(response) {
-        $scope.blog = response.data;
-    }, function(error) {
-        console.error('Error fetching blog:', error);
-    });
-    $http.delete('/api/blog/' + $routeParams.id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {}, function(error) {
-        console.error('Error deleting blog:', error.data.error);
-        alert('Failed to delete blog: ' + error.data.error);  // Display more specific error from server
-    });
+    $scope.loadBlogDetails = function() {
+        $http.get('/api/blog/' + $routeParams.id).then(function(response) {
+            $scope.blog = response.data;
+        }, function(error) {
+            console.error('Error fetching blog:', error);
+            alert('Failed to load blog: ' + error.data.error);
+        });
+    };
+
+    $scope.deleteBlog = function() {
+            $http.delete('/api/blog/' + $routeParams.id, {
+                headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+            }).then(function(response) {
+                alert('Blog successfully deleted');
+                $location.path('/blogs'); // Redirect after delete
+            }, function(error) {
+                console.error('Error deleting blog:', error.data.error);
+                alert('Failed to delete blog: ' + error.data.error);
+            });
+    };
+
+    // Initially load blog details if needed
+    $scope.loadBlogDetails();
 }]);
 
 // Controllers for user authentication

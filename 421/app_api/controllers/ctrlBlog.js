@@ -69,25 +69,26 @@ module.exports.updateBlog = async (req, res) => {
 
 
 module.exports.deleteBlog = async (req, res) => {
-    try {
-        const blogId = req.params.id;
-        const blog = await Blog.findById(blogId);
+    const blogId = req.params.id;
 
+    try {
+        const blog = await Blog.findById(blogId);
         if (!blog) {
-            console.log("in blog not found")
+            console.log("Blog not found");  // Optional: Adjust logging as per your logging strategy
             return res.status(404).json({ error: 'Blog not found' });
-           
         }
-        else if (blog.blogAuthor.toString() !== req.userId) {
+
+        if (blog.blogAuthor.toString() !== req.userId) {
+            console.log("Unauthorized attempt to delete blog by user:", req.userId);  // Detailed log
             return res.status(403).json({ error: 'Unauthorized to delete this blog' });
         }
-        else{
-            console.log("in blog found")
-            await Blog.findByIdAndDelete(blogId);
-            res.json({ message: 'Blog successfully deleted' });
-        }
+
+        await Blog.findByIdAndDelete(blogId);
+        console.log("Blog successfully deleted", blogId);  // Confirm deletion in logs
+        res.json({ message: 'Blog successfully deleted' });
     } catch (error) {
         console.error("Error deleting blog:", error);
-        res.status(500).json({ error: 'Error deleting the blog: ' + error.message });  
+        res.status(500).json({ error: 'Error deleting the blog: ' + error.message });
     }
+
 };
