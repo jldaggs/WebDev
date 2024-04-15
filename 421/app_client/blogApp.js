@@ -132,7 +132,7 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
     }, function(error) {
         console.error('Error fetching blog:', error);
     });
-    $http.delete('/api/blog/' + id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {}, function(error) {
+    $http.delete('/api/blog/' + $routeParams.id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {}, function(error) {
         console.error('Error deleting blog:', error.data.error);
         alert('Failed to delete blog: ' + error.data.error);  // Display more specific error from server
     });
