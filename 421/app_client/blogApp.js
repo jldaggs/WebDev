@@ -132,16 +132,10 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
     }, function(error) {
         console.error('Error fetching blog:', error);
     });
-    $scope.deleteBlog = function(id) {
-        $http.delete('/api/blog/' + id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-            $location.path('/blogs');
-        }, function(error) {
-            if (error.status === 403) {
-                alert('Unauthorized: You can only delete your own posts.');
-            }
-            console.error('Error deleting blog:', error);
-        });
-    };
+    $http.delete('/api/blog/' + id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {}, function(error) {
+        console.error('Error deleting blog:', error.data.error);
+        alert('Failed to delete blog: ' + error.data.error);  // Display more specific error from server
+    });
 }]);
 
 // Controllers for user authentication
