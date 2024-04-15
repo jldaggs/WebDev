@@ -46,24 +46,21 @@ module.exports.createBlog = async (req, res) => {
 
 
 module.exports.updateBlog = async (req, res) => {
+    const blogId = req.params.id;
     try {
-        const token = req.headers.authorization.split(' ')[1]; // Assuming Bearer token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const blogId = req.params.id;
-
         const blog = await Blog.findById(blogId);
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        if (blog.author.toString() !== decoded.userId) {
+        if (blog.blogAuthor.toString() !== req.userId) {
             return res.status(403).json({ error: 'Unauthorized to update this blog' });
         }
-
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
-        res.json(updatedBlog); // Return the updated blog
+        res.json(updatedBlog);
     } catch (error) {
-        res.status(500).json({ error: 'Error updating the blog' });
+        console.error("Error updating blog:", error);
+        res.status(500).json({ error: 'Error updating the blog: ' + error.message });
     }
 };
 
