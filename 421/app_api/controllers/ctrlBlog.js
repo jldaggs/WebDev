@@ -77,12 +77,13 @@ module.exports.deleteBlog = async (req, res) => {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        if (blog.blogAuthor.toString() !== req.userId) {
+        else if (blog.blogAuthor.toString() !== req.userId) {
             return res.status(403).json({ error: 'Unauthorized to delete this blog' });
         }
-
-        await Blog.findByIdAndDelete(blogId);
-        res.json({ message: 'Blog successfully deleted' });
+        else{
+            await Blog.findByIdAndDelete(blogId);
+            res.json({ message: 'Blog successfully deleted' });
+        }
     } catch (error) {
         console.error("Error deleting blog:", error);
         res.status(500).json({ error: 'Error deleting the blog: ' + error.message });  
