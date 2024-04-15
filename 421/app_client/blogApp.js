@@ -65,6 +65,7 @@ app.factory('AuthService', ['$window', function($window) {
         isLoggedIn: function() {
             var token = this.getToken();
             return !!token;
+
         },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
@@ -83,36 +84,32 @@ app.factory('AuthService', ['$window', function($window) {
 }]);
 
 // Controllers for blog operations
-app.controller('blogListController', ['$scope', '$http', 'AuthService', function($scope, $http, AuthService) {
+app.controller('blogListController', ['$scope', '$http','$rootscope', 'AuthService', function($scope, $http, AuthService) {
     $scope.blogs = [];
+    $scope.currentUserId = AuthService.getUserId(); // Ensure AuthService can extract the user ID
+
     function loadBlogs() {
-        $http.get('/api/blogs').then(function(response) {
-            $scope.blogs = response.data.map(blog => {
-                return {
-                    ...blog,
-                    isCurrentUserAuthor: AuthService.isLoggedIn() && blog.blogAuthor._id === AuthService.getUserId()
-                };
-            });
+        $http.get('/api/blog').then(function(response) {
+            $scope.blogs = response.data.map(blog => ({
+                ...blog,
+                isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
+            }));
         }, function(error) {
             console.error('Error fetching blogs:', error);
         });
     }
 
-    // Initially load blogs
+    // Initial load of blogs
     loadBlogs();
 
-    // Watch for changes in authentication status
-    $rootScope.$watch(function() {
-        return AuthService.isLoggedIn();
-    }, function(newValue, oldValue) {
-        if (newValue !== oldValue) {
-            // Re-evaluate whether the current user is the author
-            $scope.blogs.forEach(blog => {
-                blog.isCurrentUserAuthor = newValue && blog.blogAuthor._id === AuthService.getUserId();
-            });
-        }
+    // Listen for changes in authentication status
+    $rootScope.$on('authChange', function() {
+        $scope.currentUserId = AuthService.getUserId(); // Update current user ID
+        loadBlogs(); // Reload blogs to update 'isCurrentUserAuthor' flags
     });
 }]);
+
+
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
     $scope.addBlog = function() {
