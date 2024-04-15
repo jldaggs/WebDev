@@ -69,6 +69,7 @@ app.factory('AuthService', ['$window', function($window) {
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
+            $rootScope.$broadcast('authChange');
         },
         getUserId: function() {
             var token = this.getToken();
@@ -84,19 +85,34 @@ app.factory('AuthService', ['$window', function($window) {
 // Controllers for blog operations
 app.controller('blogListController', ['$scope', '$http', 'AuthService', function($scope, $http, AuthService) {
     $scope.blogs = [];
-    $scope.currentUserId = AuthService.getUserId(); // Ensure AuthService can extract the user ID
+    function loadBlogs() {
+        $http.get('/api/blogs').then(function(response) {
+            $scope.blogs = response.data.map(blog => {
+                return {
+                    ...blog,
+                    isCurrentUserAuthor: AuthService.isLoggedIn() && blog.blogAuthor._id === AuthService.getUserId()
+                };
+            });
+        }, function(error) {
+            console.error('Error fetching blogs:', error);
+        });
+    }
 
-    $http.get('/api/blog').then(function(response) {
-        $scope.blogs = response.data.map(blog => ({
-            ...blog,
-            // Add a flag to check if the current user is the author
-            isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
-        }));
-    }, function(error) {
-        console.error('Error fetching blogs:', error);
+    // Initially load blogs
+    loadBlogs();
+
+    // Watch for changes in authentication status
+    $rootScope.$watch(function() {
+        return AuthService.isLoggedIn();
+    }, function(newValue, oldValue) {
+        if (newValue !== oldValue) {
+            // Re-evaluate whether the current user is the author
+            $scope.blogs.forEach(blog => {
+                blog.isCurrentUserAuthor = newValue && blog.blogAuthor._id === AuthService.getUserId();
+            });
+        }
     });
 }]);
-
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
     $scope.addBlog = function() {
