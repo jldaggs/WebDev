@@ -110,18 +110,29 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
 
 app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
     $scope.blog = {};
+    
+    // Fetch the blog details for editing
     $http.get('/api/blog/' + $routeParams.id).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
+        alert('Failed to load the blog for editing.');
     });
+
+    // Function to save changes to the blog
     $scope.saveChanges = function() {
         $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {
-            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {$location.path('/blogs');}, function(error) {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+        }).then(function(response) {
+            alert('Blog updated successfully.');
+            $location.path('/blogs'); // Redirect to blog list
+        }, function(error) {
+            console.error('Error updating blog:', error);
             if (error.status === 403) {
                 alert('Unauthorized: You can only edit your own posts.');
+            } else {
+                alert('Failed to update the blog. Please try again.');
             }
-            console.error('Error updating blog:', error);
         });
     };
 }]);
@@ -140,7 +151,6 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
             $http.delete('/api/blog/' + $routeParams.id, {
                 headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
             }).then(function(response) {
-                alert('Blog successfully deleted');
                 $location.path('/blogs'); // Redirect after delete
             }, function(error) {
                 console.error('Error deleting blog:', error.data.error);
@@ -148,7 +158,6 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
             });
     };
 
-    // Initially load blog details if needed
     $scope.loadBlogDetails();
 }]);
 

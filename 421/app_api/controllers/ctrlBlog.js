@@ -17,7 +17,7 @@ module.exports.getAllBlogs = async (req, res) => {
 // Get a single blog by ID
 module.exports.getBlogById = async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findById(req.params.id).populate('blogAuthor', 'name');
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
@@ -70,19 +70,14 @@ module.exports.updateBlog = async (req, res) => {
 
 module.exports.deleteBlog = async (req, res) => {
     const blogId = req.params.id;
-
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
-            console.log("Blog not found");  // Optional: Adjust logging as per your logging strategy
             return res.status(404).json({ error: 'Blog not found' });
         }
-
         if (blog.blogAuthor.toString() !== req.userId) {
-            console.log("Unauthorized attempt to delete blog by user:", req.userId);  // Detailed log
             return res.status(403).json({ error: 'Unauthorized to delete this blog' });
         }
-
         await Blog.findByIdAndDelete(blogId);
         console.log("Blog successfully deleted", blogId);  // Confirm deletion in logs
         res.json({ message: 'Blog successfully deleted' });
