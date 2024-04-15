@@ -35,7 +35,7 @@ a {
   border: 1px solid #dee2e6;
   margin-bottom: 20px; /* Space between entries */
   padding: 15px;
-  border-radius: 5px; /* Rounded corners */
+  border-radius: 15px; /* Rounded corners */
 }
 
 /* Style the title of each blog entry */
@@ -63,21 +63,29 @@ a {
 }
 
 .blog-entry-icons a {
-  color: #001937;
+  color: #033169;
   text-decoration: none;
   margin-left: 30px;
 }
 
 .btn-primary {
   color: #fff;
-  background-color: darkcyan; /* Use your anchor color for the button */
-  border-color: darkcyan; /* Use your anchor color for the border */
+  background-color: #033169;
+  border-color: #033169;
 }
 
 .btn-primary:hover {
-  background-color: #005f60; /* Darken the color slightly on hover */
-  border-color: #004d4e; /* Darken the border color slightly on hover */
+  background-color: #032652; 
+  border-color: #032652; 
 }
 
-
+a.btn.btn-secondary {
+  color: #fff;
+  background-color: #79828d;
+  border-color: #79828d;
+}
+a.btn.btn-secondary:hover {
+  background-color: #5d646d; 
+  border-color: #5d646d; 
+}
 
