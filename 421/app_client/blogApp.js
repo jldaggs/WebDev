@@ -34,7 +34,7 @@ app.config(['$routeProvider', function($routeProvider) {
 }]);
 
 // AuthService for managing authentication
-app.factory('AuthService', ['$window', function($window) {
+app.factory('AuthService', ['$window', '$rootScope', function($window) {
     var authToken = null;
 
     function parseToken(token) {
@@ -66,6 +66,14 @@ app.factory('AuthService', ['$window', function($window) {
             var token = this.getToken();
             return !!token;
 
+        },
+        getUserId: function() {
+            var token = this.getToken();
+            if (token) {
+                var payload = parseToken(token);
+                return payload.userId; // Extract userId from the token payload
+            }
+            return null;
         },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
