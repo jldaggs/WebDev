@@ -34,7 +34,7 @@ app.config(['$routeProvider', function($routeProvider) {
 }]);
 
 // AuthService for managing authentication
-app.factory('AuthService', ['$window', '$rootScope', function($window) {
+app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
     var authToken = null;
 
     function parseToken(token) {
@@ -71,7 +71,7 @@ app.factory('AuthService', ['$window', '$rootScope', function($window) {
             var token = this.getToken();
             if (token) {
                 var payload = parseToken(token);
-                return payload.userId; // Extract userId from the token payload
+                return payload.userId; 
             }
             return null;
         },
@@ -80,14 +80,6 @@ app.factory('AuthService', ['$window', '$rootScope', function($window) {
             authToken = null;
             $rootScope.$broadcast('authChange');
         },
-        getUserId: function() {
-            var token = this.getToken();
-            if (token) {
-                var decoded = parseToken(token);
-                return decoded.userId; // Assuming the JWT includes userId
-            }
-            return null;
-        }
     };
 }]);
 
