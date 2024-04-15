@@ -84,9 +84,9 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
 }]);
 
 // Controllers for blog operations
-app.controller('blogListController', ['$scope', '$http','$rootScope', 'AuthService', function($scope, $http, AuthService) {
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
     $scope.blogs = [];
-    $scope.currentUserId = AuthService.getUserId(); // Ensure AuthService can extract the user ID
+    $scope.currentUserId = AuthService.getUserId(); 
 
     function loadBlogs() {
         $http.get('/api/blog').then(function(response) {
@@ -99,13 +99,13 @@ app.controller('blogListController', ['$scope', '$http','$rootScope', 'AuthServi
         });
     }
 
-    // Initial load of blogs
+  
     loadBlogs();
 
-    // Listen for changes in authentication status
+
     $rootScope.$on('authChange', function() {
-        $scope.currentUserId = AuthService.getUserId(); // Update current user ID
-        loadBlogs(); // Reload blogs to update 'isCurrentUserAuthor' flags
+        $scope.currentUserId = AuthService.getUserId(); 
+        loadBlogs(); 
     });
 }]);
 
