@@ -93,6 +93,7 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
+            $rootScope.$broadcast('authChange');
         },
     };
 }]);
@@ -131,6 +132,11 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
     }
     loadBlogs();
 
+
+    $rootScope.$on('authChange', function() {
+        $scope.currentUserId = AuthService.getUserId(); 
+        loadBlogs(); 
+    });
 }]);
 
 
