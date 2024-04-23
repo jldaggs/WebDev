@@ -5,13 +5,9 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    authorId: {
+    commentAuthor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
-    },
-    authorName: {
-        type: String,
         required: true
     },
     likesCount: {

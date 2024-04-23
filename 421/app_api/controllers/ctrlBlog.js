@@ -7,31 +7,24 @@ exports.home = function(req,res) {
 //**************************************************************Comment Controllers********************************************************************************** */
 
 module.exports.addComment = async (req, res) => {
-    const { blogId } = req.params; 
-    const { text } = req.body; 
-    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
-    const authorName = req.user ? req.user.name : "Anonymous"; 
     try {
-        const blog = await Blog.findById(blogId);
-        if (!blog) {
-            return res.status(404).json({ message: 'Blog not found' });
-        }
-
+        
+        const { text } = req.body;
+        const { userId } = req.user; 
         const newComment = new Comment({
             text: text,
-            authorId: userId,
-            authorName: authorName,
+            commentAuthor: userId 
         });
 
+        
         const savedComment = await newComment.save();
 
-        blog.comments.push(savedComment._id);
-        await blog.save();
-
+      
         res.status(201).json(savedComment);
     } catch (error) {
-        console.error('Error adding comment:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+       
+        console.error('Failed to add comment:', error);
+        res.status(400).json({ error: 'Failed to add comment' });
     }
 };
 
