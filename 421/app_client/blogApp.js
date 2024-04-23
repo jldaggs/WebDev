@@ -49,20 +49,19 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
-// AuthService for managing authentication
 app.factory('AuthService', ['$window', function($window) {
     var authToken = null;
 
     function parseToken(token) {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(atob(base64));
-    }    
-    
+        return JSON.parse(window.atob(base64));
+    }
+
     return {
         saveToken: function(token) {
-            $window.localStorage['blog-app-token'] = token;
             authToken = token;
+            $window.localStorage['blog-app-token'] = token;
         },
         getToken: function() {
             if (!authToken) {
@@ -74,13 +73,13 @@ app.factory('AuthService', ['$window', function($window) {
             var token = this.getToken();
             if (token) {
                 var decoded = parseToken(token);
-                return decoded.email; 
+                return decoded.email;
             }
             return null;
         },
         isLoggedIn: function() {
             var token = this.getToken();
-            return !!token;
+            return !!token && parseToken(token).exp > Date.now() / 1000;
         },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
@@ -88,6 +87,7 @@ app.factory('AuthService', ['$window', function($window) {
         }
     };
 }]);
+
 
 //*********************************************************************************Blogs******************************************************************************************************* */
 app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
