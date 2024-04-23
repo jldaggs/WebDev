@@ -56,17 +56,34 @@ a {
   color: #6c757d;
 }
 
-/* Style the edit and delete icons */
 .blog-entry-icons {
   display: flex;
-  justify-content: flex-end;
+  align-items: center; /* Align icons vertically */
+  justify-content: flex-end; /* Align icons to the right */
+  gap: 10px; /* Add space between icons */
 }
 
 .blog-entry-icons a {
-  color: #001937;
+  margin: 0 10px; 
+  color: #022652; 
   text-decoration: none;
-  margin-left: 30px;
 }
+
+.blog-entry-icons i {
+  font-size: 1.5em; 
+}
+
+.blog-entry-icons a:hover, .blog-entry-icons a:focus {
+  color: #011227; /* Darker shade of the original color */
+}
+
+
+@media (max-width: 600px) {
+  .blog-entry-icons {
+    justify-content: space-between; 
+  }
+}
+
 
 .btn-primary {
   color: #fff;

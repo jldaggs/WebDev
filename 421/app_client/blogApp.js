@@ -309,25 +309,25 @@ app.controller('blogCommentDeleteController', ['$scope', '$http', '$routeParams'
 
 
 //********************************************************************************User Auth****************************************************************************************************** */
-app.controller('loginController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
+app.controller('loginController', ['$scope', '$rootScope', '$http', '$location', 'AuthService', function($scope, $rootScope, $http, $location, AuthService) {
     $scope.user = {};
-    $scope.errorMessage = "";
 
     $scope.login = function() {
-        $http.post('/api/login', $scope.user)
-            .then(function(response) {
-                if (response.data.token) {
-                    AuthService.saveToken(response.data.token);
-                    $location.path('/blogs');  // redirect to blogs if login is successful
-                } else {
-                    $scope.errorMessage = "Invalid login response";
-                }
-            }, function(error) {
-                console.error('Error during login:', error);
-                $scope.errorMessage = "Login failed: " + (error.data.message || "Invalid email or password");
-            });
+        $http.post('/api/login', $scope.user).then(function(response) {
+            if (response.data.token) {
+                AuthService.saveToken(response.data.token);
+                $rootScope.closeLoginModal(); // Close the modal on successful login
+                $location.path('/blogs'); // Redirect to blogs
+            } else {
+                $scope.errorMessage = "Invalid login response";
+            }
+        }, function(error) {
+            console.error('Error during login:', error);
+            $scope.errorMessage = "Login failed: " + (error.data && error.data.message ? error.data.message : "Unknown error");
+        });
     };
 }]);
+
 
 
 
@@ -344,12 +344,46 @@ app.controller('registerController', ['$scope', '$http', '$location', 'AuthServi
     };
 }]);
 
-app.run(['$rootScope', 'AuthService', function($rootScope, AuthService) {
+app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
+    // Assign AuthService to rootScope for global access
     $rootScope.AuthService = AuthService;
+
+    // Modal visibility flag
+    $rootScope.showLoginModal = false;
+
+    // Function to open the login modal
+    $rootScope.openLoginModal = function() {
+        $rootScope.showLoginModal = true;
+    };
+
+    // Function to close the login modal
+    $rootScope.closeLoginModal = function() {
+        $rootScope.showLoginModal = false;
+    };
+
+    // Global logout function
     $rootScope.logout = function() {
         AuthService.logout();
-        window.location = '#!/login';
+        $location.path('/login'); // Use $location for SPA navigation
     };
+
+    // Watch for changes in authentication status to close the modal if logged in
+    $rootScope.$watch(function() {
+        return AuthService.isLoggedIn();
+    }, function(isLoggedIn) {
+        if (isLoggedIn && $rootScope.showLoginModal) {
+            $rootScope.closeLoginModal();
+        }
+    });
+
+    // Redirect to login if not authenticated when required
+    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.requiresAuth && !AuthService.isLoggedIn()) {
+            event.preventDefault(); // Prevent navigating to the route
+            $rootScope.openLoginModal(); // Show login modal instead
+        }
+    });
 }]);
+
 
 
