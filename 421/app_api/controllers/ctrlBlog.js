@@ -110,19 +110,20 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        const index = blog.likedBy.indexOf(userId);
-        if (index === -1) {
+        // Check if the user already liked the post
+        const alreadyLikedIndex = blog.likedBy.indexOf(userId);
+        if (alreadyLikedIndex === -1) {
             // Like the post
             blog.likedBy.push(userId);
             blog.likeCount++;
         } else {
             // Unlike the post
-            blog.likedBy.splice(index, 1);
+            blog.likedBy.splice(alreadyLikedIndex, 1);
             blog.likeCount--;
         }
 
         await blog.save();
-        res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
+        res.json({ success: true, likeCount: blog.likeCount, liked: alreadyLikedIndex === -1 });
     } catch (error) {
         console.error("Error toggling like:", error); // Log the error for debugging
         res.status(500).json({ error: 'Internal Server Error' });
