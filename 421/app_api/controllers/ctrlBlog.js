@@ -8,24 +8,25 @@ exports.home = function(req,res) {
 
 module.exports.addComment = async (req, res) => {
     try {
-        console.log('Request body:', req.body);  
         const { text } = req.body;
+        // Ensure the user ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        const commentAuthor = mongoose.Types.ObjectId(req.user._id);  // Correct conversion
 
-        const commentAuthor = mongoose.Types.ObjectId(req.user._id);
         const newComment = new Comment({
             text: text,
             commentAuthor: commentAuthor
         });
 
-        
         const savedComment = await newComment.save();
-
         res.status(201).json(savedComment);
     } catch (error) {
-        res.status(400).json({ error: 'Failed to add comment' });
+        console.error('Failed to add comment:', error);
+        res.status(400).json({ error: 'Failed to add comment', details: error.message });
     }
 };
-
 
 // Get comments for a blog post
 module.exports.getComments = async (req, res) => {
