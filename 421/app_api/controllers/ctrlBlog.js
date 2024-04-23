@@ -1,4 +1,5 @@
 const Blog = require('../../../../WebDev/421/models/blogs');
+const Comment = require('../../../../WebDev/421/models/comments');
 
 exports.home = function(req,res) {
     res.render('home', { title: 'Jillian Daggs Blog'});
@@ -15,7 +16,7 @@ module.exports.addComment = async (req, res) => {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        const comment = new Comment( {
+        const comment = new Comment ({
             text,
             authorId: userId,
             authorName: req.user.name 
