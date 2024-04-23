@@ -176,7 +176,7 @@ module.exports.getAllBlogs = async (req, res) => {
 module.exports.getBlogById = async (req, res) => {
     try {
         const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findById(req.params.blogId);
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
