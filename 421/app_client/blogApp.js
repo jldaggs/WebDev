@@ -100,7 +100,7 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
 
 
 //*********************************************************************************Blogs******************************************************************************************************* */
-app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', 'BlogService', function($scope, $http, $rootScope, AuthService, BlogService) {
     $scope.blogs = [];
     $scope.currentUserId = AuthService.getUserId(); 
 
@@ -108,38 +108,32 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         $http.get('/api/blog').then(function(response) {
             $scope.blogs = response.data.map(blog => ({
                 ...blog,
-                isCurrentUserAuthor: blog.blogAuthor === $scope.currentUserId
+                isCurrentUserAuthor: blog.blogAuthor._id === $scope.currentUserId, // Check if the author's ID matches the current user's ID
+                authorName: blog.blogAuthor.name // Add the author's name to the blog object
             }));
-            $scope.blogs.forEach(blog => {
-                $http.get('/api/user/' + blog.blogAuthor).then(function(response) {
-                    blog.authorName = response.data.name;
-                }, function(error) {
-                    console.error('Error fetching user details:', error);
-                });
-            });
 
         }, function(error) {
             console.error('Error fetching blogs:', error);
         });
-        $scope.toggleLike = function(blog) {
-            if (!AuthService.isLoggedIn()) {
-                $rootScope.openLoginModal(); // Show login modal instead of alert
-                return;
-            }
-            
-            BlogService.toggleLike(blog._id).then(function(response) {
-              if (response.data.liked) {
-                blog.isLikedByUser = true;
-                blog.likeCount++;
-              } else {
-                blog.isLikedByUser = false;
-                blog.likeCount--;
-              }
-            });
-          };
     }
     loadBlogs();
 
+    $scope.toggleLike = function(blog) {
+        if (!AuthService.isLoggedIn()) {
+            $rootScope.openLoginModal(); // Show login modal instead of alert
+            return;
+        }
+        
+        BlogService.toggleLike(blog._id).then(function(response) {
+          if (response.data.liked) {
+            blog.isLikedByUser = true;
+            blog.likeCount++;
+          } else {
+            blog.isLikedByUser = false;
+            blog.likeCount--;
+          }
+        });
+    };
 
     $rootScope.$on('authChange', function() {
         $scope.currentUserId = AuthService.getUserId(); 

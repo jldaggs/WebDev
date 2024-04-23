@@ -161,7 +161,7 @@ module.exports.toggleCommentLike = async (req, res) => {
 module.exports.getAllBlogs = async (req, res) => {
     try {
         const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
-        const blogs = await Blog.find();
+        const blogs = await Blog.find().populate('blogAuthor', 'name'); // Populate the blogAuthor field with the 'name' property from the User model
         const blogsTransformed = blogs.map(blog => ({
             ...blog._doc,
             isLikedByUser: blog.likedBy.includes(userId)
@@ -171,6 +171,7 @@ module.exports.getAllBlogs = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 // Get a single blog by ID
 module.exports.getBlogById = async (req, res) => {
