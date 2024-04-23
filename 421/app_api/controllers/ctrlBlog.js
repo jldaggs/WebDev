@@ -102,10 +102,6 @@ module.exports.toggleLike = async (req, res) => {
     const { blogId } = req.params;
     const userId = req.user ? req.user._id : null;  // Check for user in session
 
-    if (!userId) {
-        return res.status(401).send('Authentication required');  // Ensures user is logged in
-    }
-
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
