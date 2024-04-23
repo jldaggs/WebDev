@@ -11,10 +11,6 @@ module.exports.addComment = async (req, res) => {
     const { text } = req.body; 
     const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
     const authorName = req.user ? req.user.name : "Anonymous"; 
-    if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized: You must be logged in to post comments.' });
-    }
-
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
