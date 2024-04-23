@@ -6,7 +6,7 @@ exports.home = function(req,res) {
 //**************************************************************Comment Controllers********************************************************************************** */
 module.exports.addComment = async (req, res) => {
     const blogId = req.params.blogId;
-    const userId = req.user._id; 
+    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
     const { text } = req.body;
 
     try {
@@ -99,7 +99,7 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 module.exports.toggleLike = async (req, res) => {
     const blogId = req.params.blogId;
-    const userId = mongoose.Types.ObjectId(req.user._id); // Assuming `req.user._id` is available from a session or token
+    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
 
     try {
         const blog = await Blog.findById(blogId);
@@ -128,7 +128,7 @@ module.exports.toggleLike = async (req, res) => {
 module.exports.toggleCommentLike = async (req, res) => {
     const blogId = req.params.blogId;
     const commentId = req.params.commentId;
-    const userId = req.user._id;
+    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
 
     try {
         const blog = await Blog.findById(blogId);
