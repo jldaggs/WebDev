@@ -10,6 +10,11 @@ const commentSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    blogPost: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BlogPost',
+        required: true
+    },
     likesCount: {
         type: Number,
         default: 0

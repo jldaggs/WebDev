@@ -9,24 +9,25 @@ exports.home = function(req,res) {
 //**************************************************************Comment Controllers********************************************************************************** */
 
 module.exports.addComment = async (req, res) => {
-    try {
-        const { text } = req.body;
-        // Ensure the user ID is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
-            return res.status(400).json({ error: 'Invalid user ID' });
-        }
-        const commentAuthor = mongoose.Types.ObjectId(req.user._id);  // Correct conversion
+    const { text } = req.body;
+    const { blogId } = req.params;
+    if (!req.user || !req.user._id) {
+        return res.status(401).json({ message: "Unauthorized or invalid token" });
+    }
+    const commentAuthor = req.user._id;
 
+    try {
         const newComment = new Comment({
-            text: text,
-            commentAuthor: commentAuthor
+            text,
+            commentAuthor,
+            blogPost: blogId
         });
 
         const savedComment = await newComment.save();
         res.status(201).json(savedComment);
     } catch (error) {
         console.error('Failed to add comment:', error);
-        res.status(400).json({ error: 'Failed to add comment', details: error.message });
+        res.status(400).json({ error: 'Failed to add comment', message: error.message });
     }
 };
 
