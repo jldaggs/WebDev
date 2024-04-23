@@ -120,7 +120,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             return;
         }
     
-        $http.post('/api/blog/' + blog._id + '/toggle-like', {}, {
+        $http.post('/api/blog/' + blog._id + '/like', {}, {
             headers: { 'Authorization': 'Bearer ' + AuthService.getToken() }
         }).then(function(response) {
             blog.likeCount = response.data.likeCount;
