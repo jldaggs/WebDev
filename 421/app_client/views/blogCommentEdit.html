@@ -3,9 +3,10 @@
   
   <!-- Display blog details -->
   <div class="blog-detail">
-      <h3>{{ blog.blogTitle }}</h3>
-      <p>{{ blog.blogText }}</p>
-  </div>
+    <h3>Blog: {{ blog.blogTitle }}</h3>
+    <p>{{ blog.blogText }}</p>
+    <p>Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}</p>
+</div>
 
   <!-- Form to edit a comment -->
   <form ng-submit="saveChanges()" class="comment-list">

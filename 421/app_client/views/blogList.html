@@ -8,26 +8,25 @@
           {{ blog.blogText }}
         </div>
         <div class="blog-entry-date">
-          Posted on: {{ blog.createdAt | date:'mediumDate' }}
-        </div>
-        <div class="blog-entry-icons" ng-show="AuthService.isLoggedIn()">
-          <!-- Icons or buttons for edit and delete actions -->
-          <a ng-href="#!/blogs/edit/{{ blog._id }}">
-            <i class="fa-solid fa-pen-to-square fa-2xl"></i>
-          </a>
-          <a ng-href="#!/blogs/delete/{{ blog._id }}">
-            <i class="fa-solid fa-trash fa-2xl"></i>
-          </a>
-        </div>
-        <div class="blog-entry-icons">
-          <a ng-href="#!/blogs/comment/{{ blog._id }}">
-            <i class="fa-solid fa-comments"></i>          
-          </a> 
-          <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
-          ng-click="toggleLike(blog)"
-          class="like-icon"></i> {{ blog.likeCount }}
-        </div>
-
+          Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}        </div>
+          <div class="blog-entry-icons">
+            <!-- Edit icon, shown only if the logged-in user is the author of the blog -->
+            <a ng-href="#!/blogs/edit/{{ blog._id }}" ng-show="blog.authorId === currentUserId">
+              <i class="fa-solid fa-pen-to-square fa-2xl"></i>
+            </a>
+            <!-- Delete icon, shown only if the logged-in user is the author of the blog -->
+            <a ng-href="#!/blogs/delete/{{ blog._id }}" ng-show="blog.authorId === currentUserId">
+              <i class="fa-solid fa-trash fa-2xl"></i>
+            </a>
+            <!-- Comments icon, shown to everyone -->
+            <a ng-href="#!/blogs/comment/{{ blog._id }}">
+              <i class="fa-solid fa-comments"></i>          
+            </a> 
+            <!-- Like icon with like count, shown to everyone -->
+            <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
+               ng-click="toggleLike(blog)"
+               class="like-icon"></i> {{ blog.likeCount }}
+          </div>
         </div>
       </div>
     </div>

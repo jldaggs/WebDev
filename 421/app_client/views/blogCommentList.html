@@ -5,8 +5,7 @@
             {{ blog.blogText }}
         </div>    
         <div class="blog-entry-date">
-            Posted on: {{ blog.createdAt | date:'mediumDate' }}
-        </div>
+            Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}        </div>
     </div>
     <h3>Comments</h3>
     <div class="comment-list">

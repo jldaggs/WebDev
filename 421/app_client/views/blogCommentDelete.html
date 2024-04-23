@@ -5,7 +5,7 @@
     <div class="blog-detail">
         <h3>Blog: {{ blog.blogTitle }}</h3>
         <p>{{ blog.blogText }}</p>
-        <p>Posted on: {{ blog.createdAt | date:'mediumDate' }}</p>
+        <p>Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}</p>
     </div>
 
     <!-- Display the comment to be deleted -->
