@@ -139,7 +139,7 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
 
 app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
     $scope.blog = {};
-    $http.get('/api/blog/' + $routeParams.id).then(function(response) {
+    $http.get('/api/blog/' + $routeParams.blogId).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
@@ -155,13 +155,13 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
 
 
 app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    $http.get('/api/blog/' + $routeParams.id).then(function(response) {
+    $http.get('/api/blog/' + $routeParams.blogId).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
     });
     $scope.deleteBlog = function(id) {
-        $http.delete('/api/blog/' + id, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+        $http.delete('/api/blog/' + blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
             $location.path('/blogs');
         }, function(error) {
             console.error('Error deleting blog:', error);
