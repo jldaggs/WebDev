@@ -9,10 +9,6 @@ const verifyToken = (req, res, next) => {
     }
 
     const token = bearerHeader.split(' ')[1];
-    if (!token) {
-        return res.status(403).send({ message: "Bearer token not found." });
-    }
-
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
             return res.status(401).send({ message: "Unauthorized! Token is invalid.", error: err });
