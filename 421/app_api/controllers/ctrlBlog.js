@@ -8,10 +8,10 @@ exports.home = function(req,res) {
 
 module.exports.addComment = async (req, res) => {
     try {
-    
+        console.log('Request body:', req.body);  
         const { text } = req.body;
 
-        const commentAuthor = req.user._id;
+        const commentAuthor = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
 
         const newComment = new Comment({
             text: text,

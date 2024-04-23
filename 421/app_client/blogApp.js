@@ -268,11 +268,12 @@ app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '
     };
 
     $scope.addComment = function() {
-        // Set the comment's author to the current user's ID
-        $scope.comment.commentAuthor = AuthService.getUserId();
+        $scope.comment.commentAuthor = AuthService.getUserId();  // Ensure this is correct
+        console.log('Comment being sent:', $scope.comment);  // Log the comment object
     
-        // Make the POST request to add the comment
-        $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, { headers: { 'Authorization': 'Bearer ' + AuthService.getToken() } }).then(function(response) {
+        $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, {
+            headers: { 'Authorization': 'Bearer ' + AuthService.getToken() }
+        }).then(function(response) {
             $location.path('/blogs/comment/' + $routeParams.blogId);
         }, function(error) {
             console.error('Error adding comment:', error);
