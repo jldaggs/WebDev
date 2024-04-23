@@ -256,8 +256,18 @@ app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 
 
 
 app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
+    
     $scope.comment = {};
 
+    $scope.fetchData = function() {
+        // Fetch the blog
+        $http.get(`/api/blog/${$routeParams.blogId}`).then(function(response) {
+            $scope.blog = response.data;
+        }, function(error) {
+            console.error('Error fetching blog:', error);
+        });
+    };
+    
     $scope.addComment = function() {
         $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, {
             headers: { 'Authorization': 'Bearer ' + AuthService.getToken() }
@@ -268,15 +278,8 @@ app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '
         });
     };
 
-    // No need to fetch blog unless needed for display purposes
-    $scope.fetchBlog = function() {
-        $http.get('/api/blog/' + $routeParams.blogId, { headers: { 'Authorization': 'Bearer ' + AuthService.getToken() } }).then(function(response) {
-            $scope.blog = response.data;
-        }, function(error) {
-            console.error('Error fetching blog', error);
-        });
-    };
-    $scope.fetchBlog();
+ 
+    $scope.fetchData();
 }]);
 
 
