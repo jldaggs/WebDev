@@ -100,7 +100,9 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const blogId = req.params.blogId;
-    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
+    const userId = req.user ? req.user._id : null; // Assuming req.user._id is already a valid ObjectId
+
+    console.log("User ID:", userId); // Log the user ID to check its format
 
     try {
         const blog = await Blog.findById(blogId);
@@ -122,7 +124,7 @@ module.exports.toggleLike = async (req, res) => {
         await blog.save();
         res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
     } catch (error) {
-        console.error('Error toggling like:', error);
+        console.error("Error toggling like:", error); // Log the error for debugging
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
