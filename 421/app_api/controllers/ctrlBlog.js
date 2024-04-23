@@ -5,34 +5,40 @@ exports.home = function(req,res) {
     res.render('home', { title: 'Jillian Daggs Blog'});
 };
 //**************************************************************Comment Controllers********************************************************************************** */
+
 module.exports.addComment = async (req, res) => {
-    const blogId = req.params.blogId;
-    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
-    const { text } = req.body;
-    const authorName = req.user.name;
+    const { blogId } = req.params; 
+    const { text } = req.body; 
+    const userId = req.user ? req.user._id : null; 
+    const authorName = req.user ? req.user.name : "Anonymous"; 
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized: You must be logged in to post comments.' });
+    }
 
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
-            return res.status(404).json({ error: 'Blog not found' });
+            return res.status(404).json({ message: 'Blog not found' });
         }
 
-        const comment = new Comment({
-            text,
+        const newComment = new Comment({
+            text: text,
             authorId: userId,
-            authorName: authorName
+            authorName: authorName,
         });
 
-        await comment.save();
-        blog.comments.push(comment._id); // Ensure to push only the ID for reference
+        const savedComment = await newComment.save();
+
+        blog.comments.push(savedComment._id);
         await blog.save();
 
-        res.status(201).json(comment);
+        res.status(201).json(savedComment);
     } catch (error) {
         console.error('Error adding comment:', error);
-        res.status(500).json({ error: 'Internal Server Error', details: error.message });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 // Get comments for a blog post
 module.exports.getComments = async (req, res) => {
