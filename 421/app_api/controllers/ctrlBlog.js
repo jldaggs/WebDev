@@ -100,8 +100,8 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const { blogId } = req.params;
-    const userId = req.user._id; 
-    
+    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
+
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
