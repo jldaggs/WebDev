@@ -108,6 +108,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         $http.get('/api/blog').then(function(response) {
             $scope.blogs = response.data.map(blog => ({
                 ...blog,
+                isLikedByUser: blog.likedBy.includes(AuthService.getUserId()),
                 isCurrentUserAuthor: blog.blogAuthor._id === $scope.currentUserId, // Check if the author's ID matches the current user's ID
                 authorName: blog.blogAuthor.name // Add the author's name to the blog object
             }));
@@ -401,6 +402,7 @@ app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $locatio
     // Global logout function
     $rootScope.logout = function() {
         AuthService.logout();
+        $rootScope.$broadcast('authChange')
         $location.path('/login'); // Use $location for SPA navigation
     };
 

@@ -100,7 +100,7 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const { blogId } = req.params;
-    const userId = req.user._id; // Assuming you have user information in req.user
+    const userId = req.user._id; // Get the user ID from the session
 
     try {
         const blog = await Blog.findById(blogId);
@@ -108,17 +108,16 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).send('Blog not found');
         }
 
-        const likeIndex = blog.likedBy.indexOf(userId);
-        if (likeIndex === -1) {
+        const index = blog.likedBy.indexOf(userId);
+        if (index === -1) {
             blog.likedBy.push(userId);
-            blog.likeCount++;
         } else {
-            blog.likedBy.splice(likeIndex, 1);
-            blog.likeCount--;
+            blog.likedBy.splice(index, 1);
         }
 
+        blog.likeCount = blog.likedBy.length; // Update the like count based on the array length
         await blog.save();
-        res.json({ likeCount: blog.likeCount, liked: likeIndex === -1 });
+        res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
