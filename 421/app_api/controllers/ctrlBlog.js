@@ -5,7 +5,7 @@ exports.home = function(req,res) {
 };
 //**************************************************************Comment Controllers********************************************************************************** */
 module.exports.addComment = async (req, res) => {
-    const blogId = req.params.id;
+    const blogId = req.params.blogId;
     const userId = req.user._id; 
     const { text } = req.body;
 
@@ -31,7 +31,7 @@ module.exports.addComment = async (req, res) => {
 
 // Get comments for a blog post
 module.exports.getComments = async (req, res) => {
-    const blogId = req.params.id;
+    const blogId = req.params.blogId;
 
     try {
         const blog = await Blog.findById(blogId, 'comments');
@@ -98,7 +98,7 @@ module.exports.deleteComment = async (req, res) => {
 
 //*************************************************************************Likes Controller************************************************************************************ */
 module.exports.toggleLike = async (req, res) => {
-    const blogId = req.params.id;
+    const blogId = req.params.blogId;
     const userId = mongoose.Types.ObjectId(req.user._id); // Assuming `req.user._id` is available from a session or token
 
     try {
@@ -202,7 +202,7 @@ module.exports.createBlog = async (req, res) => {
 
 module.exports.updateBlog = async (req, res) => {
     try {
-        const blogId = req.params.id;
+        const blogId = req.params.blogId;
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
         if (!updatedBlog) {
             return res.status(404).json({ error: 'Blog not found' });
@@ -216,7 +216,7 @@ module.exports.updateBlog = async (req, res) => {
 
     module.exports.deleteBlog = async (req, res) => {
         try {
-            const blogId = req.params.id;
+            const blogId = req.params.blogId;
             await Blog.findByIdAndDelete(blogId);
             res.json({ message: 'Blog successfully deleted' });
         } catch (error) {
