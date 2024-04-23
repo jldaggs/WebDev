@@ -24,9 +24,7 @@
           <i class="fa-solid fa-comments"></i>          
         </a> 
         <!-- Like icon with like count, shown to everyone -->
-        <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
-          ng-click="toggleLike(blog)"
-          class="like-icon"></i> {{ blog.likeCount }}
+        <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser,'fa-regular fa-heart': !blog.isLikedByUser}"ng-click="toggleLike(blog)"class="like-icon"></i> {{ blog.likeCount }}  
       </div>
     </div>
   </div>

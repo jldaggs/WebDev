@@ -118,28 +118,25 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
     }
     loadBlogs();
 
-    // $scope.toggleLike = function(blog) {
-    //     if (!AuthService.isLoggedIn()) {
-    //         $rootScope.openLoginModal(); // Show login modal instead of alert
-    //         return;
-    //     }
-        
-    //     BlogService.toggleLike(blog._id).then(function(response) {
-    //       if (response.data.liked) {
-    //         blog.isLikedByUser = true;
-    //         blog.likeCount++;
-    //       } else {
-    //         blog.isLikedByUser = false;
-    //         blog.likeCount--;
-    //       }
-    //     });
-    // };
-
     $rootScope.$on('authChange', function() {
         $scope.currentUserId = AuthService.getUserId(); 
         loadBlogs(); 
     });
+
+    // Function to toggle like status
+    $scope.toggleLike = function(blog) {
+        $http.post('/api/blog/' + blog._id + '/toggle-like', {}, {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+        }).then(function(response) {
+            // Update like status and count
+            blog.isLikedByUser = response.data.liked;
+            blog.likeCount = response.data.likeCount;
+        }, function(error) {
+            console.error('Error toggling like:', error);
+        });
+    };
 }]);
+
 
 
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
@@ -240,26 +237,6 @@ app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 
     $scope.fetchBlog();
     $scope.fetchComments();
 
-    // Toggle like on a comment
-    // $scope.toggleLike = function(comment) {
-    //     if (!AuthService.isLoggedIn()) {
-    //         $rootScope.openLoginModal(); // Show login modal instead of alert
-    //         return;
-    //     }
-
-    //     // Assuming a similar BlogService or CommentService exists for handling likes
-    //     CommentService.toggleLike(comment._id).then(function(response) {
-    //         if (response.data.liked) {
-    //             comment.isLikedByUser = true;
-    //             comment.likesCount++;
-    //         } else {
-    //             comment.isLikedByUser = false;
-    //             comment.likesCount--;
-    //         }
-    //     }, function(error) {
-    //         console.error('Error toggling like on comment:', error);
-    //     });
-    // };
 }]);
 
 
