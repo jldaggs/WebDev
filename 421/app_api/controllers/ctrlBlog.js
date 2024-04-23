@@ -15,16 +15,18 @@ module.exports.addComment = async (req, res) => {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        const comment = {
+        const comment = new Comment( {
             text,
             authorId: userId,
             authorName: req.user.name 
-        };
+        });
 
+        await comment.save();
         blog.comments.push(comment);
         await blog.save();
         res.status(201).json(comment);
     } catch (error) {
+        console.error('Error adding comment:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
