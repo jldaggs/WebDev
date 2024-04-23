@@ -1,17 +1,22 @@
-<div class="container mt-5" ng-controller="blogCommentAddController">
-  <h2 class="pageTitle">Comment on Blog: {{ blog.blogTitle }}</h2>
-  
-  <!-- Display blog details -->
-  <div class="blog-entry-title">
-    {{ blog.blogTitle }}
-</div>
-<div class="blog-entry-content">
-    {{ blog.blogText }}
-</div>    
-<div class="blog-entry-date">
-    Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}
-  </div>
-</div>
+<div class="container mt-5">
+    <h2 class="pageTitle">{{ blog.blogTitle }}</h2>
+    <div class="blog-entry">
+        <div class="blog-entry-title">{{ blog.blogTitle }}</div>
+        <div class="blog-entry-content">{{ blog.blogText }}</div>
+        <div class="blog-entry-date">
+            Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}
+        </div>
+        <div class="blog-entry-icons">
+            <!-- Comments icon, shown to everyone -->
+            <a ng-href="#!/blogs/comment/add/:blogId">
+                <i class="fa-solid fa-comment-medical"></i>          
+            </a> 
+            <!-- Like icon with like count, shown to everyone -->
+            <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
+            ng-click="toggleLike(blog)"
+            class="like-icon"></i> {{ blog.likeCount }}  
+        </div>
+    </div>
   <!-- Form to add a comment -->
   <form ng-submit="addComment()">
       <div class="form-group">
