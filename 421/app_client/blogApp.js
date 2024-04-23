@@ -198,14 +198,14 @@ app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 
     $scope.blog = {};
     $scope.comments = [];
 
-        // Function to fetch blog by ID
-        $scope.fetchBlog = function() {
-            $http.get('/api/blog/' + $routeParams.blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-                $scope.blog = response.data;
-            }, function(error) {
-                console.error('Error fetching blog', error);
-            });
-        };
+    // Function to fetch blog by ID
+    $scope.fetchBlog = function() {
+        $http.get('/api/blog/' + $routeParams.blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+            $scope.blog = response.data;
+        }, function(error) {
+            console.error('Error fetching blog', error);
+        });
+    };
 
     // Fetch comments from the server
     $scope.fetchComments = function() {
@@ -215,6 +215,10 @@ app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 
             console.error('Error fetching comments:', error);
         });
     };
+
+    // Initialize the fetching process for both blog and comments
+    $scope.fetchBlog();
+    $scope.fetchComments();
 
     // Toggle like on a comment
     $scope.toggleLike = function(comment) {
@@ -236,9 +240,8 @@ app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 
             console.error('Error toggling like on comment:', error);
         });
     };
-
-    $scope.fetchComments();
 }]);
+
 
 
 app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
