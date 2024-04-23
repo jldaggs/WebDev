@@ -49,25 +49,23 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
-app.factory('AuthService', ['$window', function($window) {
+app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
     var authToken = null;
 
     function parseToken(token) {
-        var base64Url = token.split('.')[1]; // Extract the payload of the JWT
+        var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(window.atob(base64));
-    }
+        return JSON.parse(atob(base64));
+    }    
     
     return {
         saveToken: function(token) {
-            console.log("Saving token:", token);
-            $window.localStorage.setItem('blog-app-token', token);
+            $window.localStorage['blog-app-token'] = token;
             authToken = token;
         },
         getToken: function() {
             if (!authToken) {
-                authToken = $window.localStorage.getItem('blog-app-token');
-                console.log("Retrieved token from storage:", authToken);
+                authToken = $window.localStorage['blog-app-token'];
             }
             return authToken;
         },
@@ -75,18 +73,15 @@ app.factory('AuthService', ['$window', function($window) {
             var token = this.getToken();
             if (token) {
                 var decoded = parseToken(token);
-                return decoded.email;
+                return decoded.email; 
             }
             return null;
         },
         isLoggedIn: function() {
             var token = this.getToken();
-            if (token) {
-                var payload = parseToken(token);
-                return payload.exp > Date.now() / 1000; 
-            }
-            return false;
-        }, 
+            return !!token;
+
+        },
         getUserId: function() {
             var token = this.getToken();
             if (token) {
@@ -94,48 +89,55 @@ app.factory('AuthService', ['$window', function($window) {
                 return payload.userId; 
             }
             return null;
-        },       
+        },
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
-        }
+            $rootScope.$broadcast('authChange');
+        },
     };
 }]);
 
 
 //*********************************************************************************Blogs******************************************************************************************************* */
-app.controller('blogListController', ['$scope', '$http', function($scope, $http) {
-    console.log("blogListController initialized");
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
     $scope.blogs = [];
-    $http.get('/api/blog').then(function(response) {
-        console.log(response.data);
-        $scope.blogs = response.data= response.data.map(blog => {
-            return {
-                ...blog,
-                blogAuthor: blog.blogAuthor.name 
-            };
-        });
-    }, function(error) {
-        console.error('Error fetching blogs:', error);
-    });
-    $scope.toggleLike = function(blog) {
-        if (!AuthService.isLoggedIn()) {
-            $rootScope.openLoginModal(); // Show login modal instead of alert
-            return;
-        }
-        
-        BlogService.toggleLike(blog._id).then(function(response) {
-          if (response.data.liked) {
-            blog.isLikedByUser = true;
-            blog.likeCount++;
-          } else {
-            blog.isLikedByUser = false;
-            blog.likeCount--;
-          }
-        });
-      };
-}]);
+    $scope.currentUserId = AuthService.getUserId(); 
 
+    function loadBlogs() {
+        $http.get('/api/blog').then(function(response) {
+            $scope.blogs = response.data.map(blog => ({
+                ...blog,
+                isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
+            }));
+        }, function(error) {
+            console.error('Error fetching blogs:', error);
+        });
+        $scope.toggleLike = function(blog) {
+            if (!AuthService.isLoggedIn()) {
+                $rootScope.openLoginModal(); // Show login modal instead of alert
+                return;
+            }
+            
+            BlogService.toggleLike(blog._id).then(function(response) {
+              if (response.data.liked) {
+                blog.isLikedByUser = true;
+                blog.likeCount++;
+              } else {
+                blog.isLikedByUser = false;
+                blog.likeCount--;
+              }
+            });
+          };
+    }
+    loadBlogs();
+
+
+    $rootScope.$on('authChange', function() {
+        $scope.currentUserId = AuthService.getUserId(); 
+        loadBlogs(); 
+    });
+}]);
 
 
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
