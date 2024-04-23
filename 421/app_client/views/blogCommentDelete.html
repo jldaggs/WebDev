@@ -1,0 +1,24 @@
+<div class="container mt-5" ng-controller="blogCommentDeleteController">
+    <h2 class="pageTitle">Delete Comment</h2>
+
+    <!-- Display blog details -->
+    <div class="blog-detail">
+        <h3>Blog: {{ blog.blogTitle }}</h3>
+        <p>{{ blog.blogText }}</p>
+        <p>Posted on: {{ blog.createdAt | date:'mediumDate' }}</p>
+    </div>
+
+    <!-- Display the comment to be deleted -->
+    <div class="comment-detail">
+        <h4>Comment by {{ comment.authorName }}:</h4>
+        <p>{{ comment.text }}</p>
+        <p>Posted on: {{ comment.createdAt | date:'mediumDate' }}</p>
+    </div>
+
+    <div class="blog-entry-icons">
+        <!-- Use ng-click to trigger deleteComment function -->
+        <button type="button" class="btn btn-danger" ng-click="deleteComment()">Delete Comment</button>
+        <!-- Cancel button/link -->
+        <a href="#!/blogs/comment/{{ blog._id }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>

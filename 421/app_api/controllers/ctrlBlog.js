@@ -3,11 +3,170 @@ const Blog = require('../../../../WebDev/421/models/blogs');
 exports.home = function(req,res) {
     res.render('home', { title: 'Jillian Daggs Blog'});
 };
-// Get all blogs
+//**************************************************************Comment Controllers********************************************************************************** */
+module.exports.addComment = async (req, res) => {
+    const blogId = req.params.id;
+    const userId = req.user._id; 
+    const { text } = req.body;
+
+    try {
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        const comment = {
+            text,
+            authorId: userId,
+            authorName: req.user.name 
+        };
+
+        blog.comments.push(comment);
+        await blog.save();
+        res.status(201).json(comment);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+// Get comments for a blog post
+module.exports.getComments = async (req, res) => {
+    const blogId = req.params.id;
+
+    try {
+        const blog = await Blog.findById(blogId, 'comments');
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        res.json(blog.comments);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+module.exports.editComment = async (req, res) => {
+    const blogId = req.params.blogId;
+    const commentId = req.params.commentId;
+    const { text } = req.body; 
+
+    try {
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        // Find the comment in the blog.comments array
+        const comment = blog.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        
+        comment.text = text;
+
+        await blog.save();
+        res.json({ message: 'Comment updated successfully', comment });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+module.exports.deleteComment = async (req, res) => {
+    const blogId = req.params.blogId;
+    const commentId = req.params.commentId;
+
+    try {
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        // Remove the comment from the comments array
+        const comment = blog.comments.id(commentId);
+        if (comment) {
+            comment.remove();
+        } else {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        await blog.save();
+        res.json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+//*************************************************************************Likes Controller************************************************************************************ */
+module.exports.toggleLike = async (req, res) => {
+    const blogId = req.params.id;
+    const userId = mongoose.Types.ObjectId(req.user._id); // Assuming `req.user._id` is available from a session or token
+
+    try {
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        const index = blog.likedBy.indexOf(userId);
+        if (index === -1) {
+            // Like the post
+            blog.likedBy.push(userId);
+            blog.likeCount++;
+        } else {
+            // Unlike the post
+            blog.likedBy.splice(index, 1);
+            blog.likeCount--;
+        }
+
+        await blog.save();
+        res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+module.exports.toggleCommentLike = async (req, res) => {
+    const blogId = req.params.blogId;
+    const commentId = req.params.commentId;
+    const userId = req.user._id;
+
+    try {
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        const comment = blog.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        const likeIndex = comment.likedBy.indexOf(userId);
+        if (likeIndex === -1) {
+            comment.likedBy.push(userId);
+            comment.likesCount++;
+        } else {
+            comment.likedBy.splice(likeIndex, 1);
+            comment.likesCount--;
+        }
+
+        await blog.save();
+        res.json({ success: true, likesCount: comment.likesCount, liked: likeIndex === -1 });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+//******************************************************************************Blogs Controllers****************************************************************************************************** */
 module.exports.getAllBlogs = async (req, res) => {
     try {
+        const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
         const blogs = await Blog.find();
-        res.json(blogs); // Return blogs as JSON
+        const blogsTransformed = blogs.map(blog => ({
+            ...blog._doc,
+            isLikedByUser: blog.likedBy.includes(userId)
+        }));
+        res.json(blogsTransformed);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -16,15 +175,18 @@ module.exports.getAllBlogs = async (req, res) => {
 // Get a single blog by ID
 module.exports.getBlogById = async (req, res) => {
     try {
+        const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
         const blog = await Blog.findById(req.params.id);
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
-        res.json(blog);
+        const isLikedByUser = blog.likedBy.includes(userId);
+        res.json({ ...blog._doc, isLikedByUser });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 // Add a new blog
 module.exports.createBlog = async (req, res) => {

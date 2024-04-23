@@ -1,0 +1,40 @@
+<div class="container mt-5" ng-controller="blogCommentListController">
+    <h2 class="pageTitle">{{ blog.blogTitle }}</h2>
+    <div class="form-group blog-entry">
+        <div class="blog-entry-content">
+            {{ blog.blogText }}
+        </div>    
+        <div class="blog-entry-date">
+            Posted on: {{ blog.createdAt | date:'mediumDate' }}
+        </div>
+    </div>
+    <h3>Comments</h3>
+    <div class="comment-list">
+        <div class="comment-entry" ng-repeat="comment in blog.comments">
+            <div class="comment-author">
+                Posted by: {{ comment.authorName }}
+            </div>
+            <div class="comment-text">
+                {{ comment.text }}
+            </div>
+            <div class="comment-date">
+                Posted on: {{ comment.createdAt | date:'mediumDate' }}
+            </div>
+            <div class="blog-entry-icons" ng-show="AuthService.isLoggedIn()">
+                <!-- Icons or buttons for edit and delete actions -->
+                <a ng-href="#!/blogs/comment/edit/{{ blog._id }}/{{comment._id}}">
+                  <i class="fa-solid fa-pen-to-square fa-2xl"></i>
+                </a>
+                <a ng-href="#!/blogs/comment/delete/{{ blog._id }}/{{comment._id}}">
+                  <i class="fa-solid fa-trash fa-2xl"></i>
+                </a>
+              </div>
+            <div class = "blog-entry-icons">
+                <i ng-class="{'fa-solid fa-heart': comment.isLikedByUser, 'fa-regular fa-heart': !comment.isLikedByUser}"
+                ng-click="toggleLike(comment)"
+                class="like-icon"></i> {{ comment.likesCount }}
+
+            </div>
+        </div>
+    </div>
+</div>

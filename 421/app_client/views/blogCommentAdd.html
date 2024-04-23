@@ -1,0 +1,23 @@
+<div class="container mt-5" ng-controller="blogCommentAddController">
+  <h2 class="pageTitle">Comment on Blog: {{ blog.blogTitle }}</h2>
+  
+  <!-- Display blog details -->
+  <div class="blog-detail">
+      <h3>{{ blog.blogTitle }}</h3>
+      <p>{{ blog.blogText }}</p>
+      <p>Posted on: {{ blog.createdAt | date:'mediumDate' }}</p>
+  </div>
+  
+  <!-- Form to add a comment -->
+  <form ng-submit="addComment()">
+      <div class="form-group">
+          <label for="commentText">Your Comment:</label>
+          <textarea id="commentText" ng-model="comment.text" class="form-control" rows="3" required></textarea>
+      </div>
+      <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Post Comment</button>
+          <!-- Cancel button/link -->
+          <a href="#!/blogs" class="btn btn-secondary">Cancel</a>
+      </div>
+  </form>
+</div>
