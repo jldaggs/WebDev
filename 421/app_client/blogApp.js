@@ -370,8 +370,8 @@ app.controller('loginController', ['$scope', '$http', '$location', 'AuthService'
     $scope.login = function() {
         $http.post('/api/login', $scope.user).then(function(response) {
             AuthService.saveToken(response.data.token);
-            $rootScope.$broadcast('authChange');
             $location.path('/blogs');
+            $rootScope.$broadcast('authChange');
         }, function(error) {
             console.error('Error during login:', error);
             $scope.errorMessage = "Login failed: Invalid email or password";
@@ -384,8 +384,8 @@ app.controller('registerController', ['$scope', '$http', '$location', 'AuthServi
     $scope.register = function() {
         $http.post('/api/register', $scope.newUser).then(function(response) {
             AuthService.saveToken(response.data.token);
-            $rootScope.$broadcast('authChange');
             $location.path('/blogs');
+            $rootScope.$broadcast('authChange');
         }, function(error) {
             console.error('Error during registration:', error);
             $scope.errorMessage = "Registration failed: " + error.data.message;
