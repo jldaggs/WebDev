@@ -8,9 +8,9 @@
         </div>
         <div class="blog-entry-icons">
             <!-- Comments icon, shown to everyone -->
-            <a ng-href="#!/blogs/comment/add/:blogId">
-                <i class="fa-solid fa-comment-medical"></i>          
-            </a> 
+            <a ng-href="#!/blogs/comment/{{ blog._id }}">
+                <i class="fa-solid fa-comments"></i>          
+              </a>          
             <!-- Like icon with like count, shown to everyone -->
             <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
             ng-click="toggleLike(blog)"
