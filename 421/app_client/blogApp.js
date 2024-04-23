@@ -111,8 +111,8 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
                 isCurrentUserAuthor: blog.blogAuthor === $scope.currentUserId
             }));
             $scope.blogs.forEach(blog => {
-                $http.get('/api/user/' + blog.blogAuthor).then(function(Response) {
-                    blog.authorName = userResponse.data.name;
+                $http.get('/api/user/' + blog.blogAuthor).then(function(response) {
+                    blog.authorName = response.data.name;
                 }, function(error) {
                     console.error('Error fetching user details:', error);
                 });
