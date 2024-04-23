@@ -49,54 +49,49 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
-app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
+app.factory('AuthService', ['$window', function($window) {
     var authToken = null;
 
-    function parseToken(token) {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(atob(base64));
-    }    
-    
-    return {
-        saveToken: function(token) {
-            $window.localStorage['blog-app-token'] = token;
-            authToken = token;
-        },
-        getToken: function() {
-            if (!authToken) {
-                authToken = $window.localStorage['blog-app-token'];
-            }
-            return authToken;
-        },
-        getUserEmail: function() {
-            var token = this.getToken();
-            if (token) {
-                var decoded = parseToken(token);
-                return decoded.email; 
-            }
-            return null;
-        },
-        isLoggedIn: function() {
-            var token = this.getToken();
-            return !!token;
+    function saveToken(token) {
+        $window.localStorage['blog-app-token'] = token;
+        authToken = token;
+    }
 
-        },
-        getUserId: function() {
-            var token = this.getToken();
-            if (token) {
-                var payload = parseToken(token);
-                return payload.userId; 
-            }
-            return null;
-        },
-        logout: function() {
-            $window.localStorage.removeItem('blog-app-token');
-            authToken = null;
-            $rootScope.$broadcast('authChange');
-        },
+    function getToken() {
+        if (!authToken) {
+            authToken = $window.localStorage['blog-app-token'];
+        }
+        return authToken;
+    }
+
+    function isLoggedIn() {
+        var token = getToken();
+        return !!token;
+    }
+
+    function getUserId() {
+        var token = getToken();
+        if (token) {
+            var payload = JSON.parse(window.atob(token.split('.')[1]));
+            return payload.userId;
+        }
+        return null;
+    }
+
+    function logout() {
+        $window.localStorage.removeItem('blog-app-token');
+        authToken = null;
+    }
+
+    return {
+        saveToken: saveToken,
+        getToken: getToken,
+        isLoggedIn: isLoggedIn,
+        getUserId: getUserId,
+        logout: logout
     };
 }]);
+
 
 
 //*********************************************************************************Blogs******************************************************************************************************* */
@@ -120,15 +115,24 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             return;
         }
     
-        $http.post('/api/blog/' + blog._id + '/like').then(function(response) {
+        var token = AuthService.getToken();
+        if (!token) {
+            alert('Authentication token not found.');
+            return;
+        }
+    
+        $http.post('/api/blog/' + blog._id + '/like', {}, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        }).then(function(response) {
             if (response.data.success) {
                 blog.likeCount = response.data.likeCount;
                 blog.isLikedByUser = response.data.liked;
             }
         }).catch(function(error) {
             console.error('Error toggling like:', error);
+            alert('Failed to toggle like. Please try again.');
         });
-    };    
+    }; 
     $rootScope.$on('authChange', function() {
         loadBlogs();  // This will reload the blogs whenever the authentication state changes
     });
