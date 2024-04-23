@@ -267,7 +267,7 @@ app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '
             console.error('Error fetching blog:', error);
         });
     };
-    
+
     $scope.addComment = function() {
         $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, {
             headers: { 'Authorization': 'Bearer ' + AuthService.getToken() }
