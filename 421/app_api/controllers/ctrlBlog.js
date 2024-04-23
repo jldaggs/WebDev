@@ -8,9 +8,20 @@ exports.home = function(req,res) {
 
 module.exports.addComment = async (req, res) => {
     try {
-        const newComment = new Comment(req.body);
+    
+        const { text } = req.body;
+
+        const commentAuthor = req.user._id;
+
+        const newComment = new Comment({
+            text: text,
+            commentAuthor: commentAuthor
+        });
+
+        
         const savedComment = await newComment.save();
-        res.status(201).json(savedComment); // Return the saved blog
+
+        res.status(201).json(savedComment);
     } catch (error) {
         res.status(400).json({ error: 'Failed to add comment' });
     }

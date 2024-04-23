@@ -260,16 +260,19 @@ app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '
     $scope.comment = {};
 
     $scope.fetchBlog = function() {
-        $http.get('/api/blog/' + $routeParams.blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+        $http.get('/api/blog/' + $routeParams.blogId, { headers: { 'Authorization': 'Bearer ' + AuthService.getToken() } }).then(function(response) {
             $scope.blog = response.data;
         }, function(error) {
             console.error('Error fetching blog', error);
         });
     };
 
-    // Function to add a comment
     $scope.addComment = function() {
-        $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+        // Set the comment's author to the current user's ID
+        $scope.comment.commentAuthor = AuthService.getUserId();
+    
+        // Make the POST request to add the comment
+        $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, { headers: { 'Authorization': 'Bearer ' + AuthService.getToken() } }).then(function(response) {
             $location.path('/blogs/comment/' + $routeParams.blogId);
         }, function(error) {
             console.error('Error adding comment:', error);
@@ -279,6 +282,7 @@ app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '
     // Initialize by fetching the blog
     $scope.fetchBlog();
 }]);
+
 
 
 app.controller('blogCommentEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
