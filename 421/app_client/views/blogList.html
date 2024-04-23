@@ -14,13 +14,13 @@
         <!-- Edit icon, shown only if the logged-in user is the author of the blog -->
         <a ng-href="#!/blogs/edit/{{ blog._id }}" ng-show="blog.blogAuthor._id === AuthService.getUserId()">
           <i class="fa-solid fa-pen-to-square fa-2xl"></i>
-          <span style="display: none;">{{ blog.blogAuthor._id }} / {{ AuthService.getUserId() }}</span>
+          <span>{{ blog.blogAuthor._id }} / {{ AuthService.getUserId() }}</span>
         </a>
         </a>
         <!-- Delete icon, shown only if the logged-in user is the author of the blog -->
         <a ng-href="#!/blogs/delete/{{ blog._id }}" ng-show="blog.blogAuthor._id === AuthService.getUserId()">
           <i class="fa-solid fa-trash fa-2xl"></i>
-          <span style="display: none;">{{ blog.blogAuthor._id }} / {{ AuthService.getUserId() }}</span>
+          <span>{{ blog.blogAuthor._id }} / {{ AuthService.getUserId() }}</span>
         </a>
         </a>
         <!-- Comments icon, shown to everyone -->
