@@ -122,13 +122,15 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         $scope.currentUserId = AuthService.getUserId(); 
         loadBlogs(); 
     });
-
-    // Function to toggle like status
     $scope.toggleLike = function(blog) {
+        if (!AuthService.isLoggedIn()) {
+            console.error('User must be logged in to like blogs');
+            return;
+        }
+
         $http.post('/api/blog/' + blog._id + '/like', {}, {
             headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
         }).then(function(response) {
-            // Update like status and count
             blog.isLikedByUser = response.data.liked;
             blog.likeCount = response.data.likeCount;
         }, function(error) {

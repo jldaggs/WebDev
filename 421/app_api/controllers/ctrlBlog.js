@@ -99,36 +99,31 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const blogId = req.params.blogId;
-    const userId = req.user ? req.user._id : null; // Assuming req.user._id is already a valid ObjectId
-
-    console.log("User ID:", userId); // Log the user ID to check its format
+    const { blogId } = req.params;
+    const userId = req.user._id; // Assuming you have user information in req.user
 
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
-            return res.status(404).json({ error: 'Blog not found' });
+            return res.status(404).send('Blog not found');
         }
 
-        // Check if the user already liked the post
-        const alreadyLikedIndex = blog.likedBy.indexOf(userId);
-        if (alreadyLikedIndex === -1) {
-            // Like the post
+        const likeIndex = blog.likedBy.indexOf(userId);
+        if (likeIndex === -1) {
             blog.likedBy.push(userId);
             blog.likeCount++;
         } else {
-            // Unlike the post
-            blog.likedBy.splice(alreadyLikedIndex, 1);
+            blog.likedBy.splice(likeIndex, 1);
             blog.likeCount--;
         }
 
         await blog.save();
-        res.json({ success: true, likeCount: blog.likeCount, liked: alreadyLikedIndex === -1 });
+        res.json({ likeCount: blog.likeCount, liked: likeIndex === -1 });
     } catch (error) {
-        console.error("Error toggling like:", error); // Log the error for debugging
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).send('Internal Server Error');
     }
 };
+
 
 
 module.exports.toggleCommentLike = async (req, res) => {
