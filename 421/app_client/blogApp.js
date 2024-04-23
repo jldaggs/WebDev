@@ -53,11 +53,11 @@ app.factory('AuthService', ['$window', function($window) {
     var authToken = null;
 
     function parseToken(token) {
-        var base64Url = token.split('.')[1];
+        var base64Url = token.split('.')[1]; // Extract the payload of the JWT
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         return JSON.parse(window.atob(base64));
     }
-
+    
     return {
         saveToken: function(token) {
             console.log("Saving token:", token);
@@ -81,8 +81,12 @@ app.factory('AuthService', ['$window', function($window) {
         },
         isLoggedIn: function() {
             var token = this.getToken();
-            return !!token && parseToken(token).exp > Date.now() / 1000;
-        },
+            if (token) {
+                var payload = parseToken(token);
+                return payload.exp > Date.now() / 1000; 
+            }
+            return false;
+        },        
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
