@@ -128,7 +128,6 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
     $scope.addBlog = function() {
-        // Log the data being sent to check its structure
         console.log("Data being sent:", $scope.blog);
     
         $http.post('/api/blog', $scope.blog, {
@@ -137,14 +136,13 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
             $location.path('/blogs');
         }, function(error) {
             console.error('Error adding blog:', error);
-            // It's helpful to log the error response data if any
             if (error.data) {
                 console.log('Error details:', error.data);
             }
         });
     };
-    
 }]);
+
 
 
 app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
