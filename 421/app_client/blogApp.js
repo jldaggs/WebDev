@@ -307,7 +307,7 @@ app.controller('loginController', ['$scope', '$http', '$location', 'AuthService'
     $scope.user = {};
     $scope.login = function() {
         $http.post('/api/login', $scope.user).then(function(response) {
-            AuthService.saveToken(response.data.token);
+            AuthService.saveToken(response.data.token); // Assuming the token is directly in response.data.token
             $location.path('/blogs');
         }, function(error) {
             console.error('Error during login:', error);
@@ -315,6 +315,7 @@ app.controller('loginController', ['$scope', '$http', '$location', 'AuthService'
         });
     };
 }]);
+
 
 app.controller('registerController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.newUser = {};
