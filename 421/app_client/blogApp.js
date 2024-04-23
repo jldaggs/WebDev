@@ -100,7 +100,7 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
 
 
 //*********************************************************************************Blogs******************************************************************************************************* */
-app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', 'BlogService', function($scope, $http, $rootScope, AuthService, BlogService) {
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', , function($scope, $http, $rootScope, AuthService) {
     $scope.blogs = [];
     $scope.currentUserId = AuthService.getUserId(); 
 
