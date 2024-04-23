@@ -9,6 +9,7 @@ module.exports.addComment = async (req, res) => {
     const blogId = req.params.blogId;
     const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
     const { text } = req.body;
+    const authorName = req.user.name;
 
     try {
         const blog = await Blog.findById(blogId);
@@ -16,19 +17,20 @@ module.exports.addComment = async (req, res) => {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        const comment = new Comment ({
+        const comment = new Comment({
             text,
             authorId: userId,
-            authorName: req.user.name 
+            authorName: authorName
         });
 
         await comment.save();
-        blog.comments.push(comment);
+        blog.comments.push(comment._id); // Ensure to push only the ID for reference
         await blog.save();
+
         res.status(201).json(comment);
     } catch (error) {
         console.error('Error adding comment:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 };
 
