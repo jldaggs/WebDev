@@ -115,24 +115,16 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             return;
         }
     
-        var token = AuthService.getToken();
-        if (!token) {
-            alert('Authentication token not found.');
-            return;
-        }
-    
-        $http.post('/api/blog/' + blog._id + '/like', {}, {
-            headers: { 'Authorization': 'Bearer ' + token }
-        }).then(function(response) {
+        $http.post('/api/blog/' + blog._id + '/like').then(function(response) {
             if (response.data.success) {
                 blog.likeCount = response.data.likeCount;
-                blog.isLikedByUser = response.data.liked;
+                blog.isLikedByUser = response.data.liked; // Ensure this is set based on the latest server response
             }
         }).catch(function(error) {
             console.error('Error toggling like:', error);
-            alert('Failed to toggle like. Please try again.');
         });
-    }; 
+    };
+    
     $rootScope.$on('authChange', function() {
         loadBlogs();  // This will reload the blogs whenever the authentication state changes
     });

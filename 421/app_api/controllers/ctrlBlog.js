@@ -100,8 +100,8 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const { blogId } = req.params;
-    const userId = req.user._id; // Ensure that user ID is correctly obtained from session or token
-
+    const userId = req.user._id; 
+    
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
@@ -112,14 +112,14 @@ module.exports.toggleLike = async (req, res) => {
         if (index === -1) {
             // User hasn't liked the blog yet, add their ID to likedBy
             blog.likedBy.push(userId);
-            blog.likeCount = blog.likedBy.length; // Update likeCount based on the length of likedBy
         } else {
             // User already liked the blog, remove their ID from likedBy
             blog.likedBy.splice(index, 1);
-            blog.likeCount = blog.likedBy.length; // Update likeCount based on the length of likedBy
         }
 
+        blog.likeCount = blog.likedBy.length; // Always recalculate based on actual array length
         await blog.save();
+
         res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
     } catch (error) {
         console.error("Error toggling like:", error);
