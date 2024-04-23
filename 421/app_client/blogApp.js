@@ -102,28 +102,42 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
 //*********************************************************************************Blogs******************************************************************************************************* */
 app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
     $scope.blogs = [];
-    $scope.currentUserId = AuthService.getUserId();
 
     function loadBlogs() {
         $http.get('/api/blog').then(function(response) {
             $scope.blogs = response.data.map(blog => ({
                 ...blog,
-                isLikedByUser: blog.likedBy && blog.likedBy.includes($scope.currentUserId),
-                isCurrentUserAuthor: blog.blogAuthor === $scope.currentUserId,
+                isLikedByUser: blog.likedBy.includes(AuthService.getUserId()),
+                isCurrentUserAuthor: blog.blogAuthor._id === AuthService.getUserId(),
                 authorName: blog.blogAuthor ? blog.blogAuthor.name : 'Unknown Author'
             }));
-        }, function(error) {
-            console.error('Error fetching blogs:', error);
         });
     }
 
-    loadBlogs();  // Call this function to load blogs when the controller initializes
-
+    $scope.toggleLike = function(blog) {
+        if (!AuthService.isLoggedIn()) {
+            alert('Please log in to like posts.');
+            return;
+        }
+    
+        $http.post('/api/blog/' + blog._id + '/toggle-like').then(function(response) {
+            if (response.data.success) {
+                blog.likeCount = response.data.likeCount;
+                blog.isLikedByUser = response.data.liked;
+            }
+        }).catch(function(error) {
+            console.error('Error toggling like:', error);
+            alert('Failed to toggle like. Please try again.');
+        });
+    };
     $rootScope.$on('authChange', function() {
-        $scope.currentUserId = AuthService.getUserId();
-        loadBlogs();  // Reload blogs to reflect changes in authentication status
+        loadBlogs();  // This will reload the blogs whenever the authentication state changes
     });
+    
+
+    loadBlogs();
 }]);
+
 
 
 

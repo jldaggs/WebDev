@@ -99,8 +99,8 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const { blogId } = req.params;
-    const userId = req.user._id;
+    const blogId = req.params.blogId;
+    const userId = req.user._id;  // Assume req.user is populated from the authentication token
 
     try {
         const blog = await Blog.findById(blogId);
@@ -108,17 +108,19 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).send('Blog not found');
         }
 
-        const userIndex = blog.likedBy.indexOf(userId);
-        if (userIndex === -1) {
+        let likedIndex = blog.likedBy.indexOf(userId);
+        if (likedIndex === -1) {
+            // User hasn't liked the blog yet
             blog.likedBy.push(userId);
             blog.likeCount++;
         } else {
-            blog.likedBy.splice(userIndex, 1);
+            // User already liked the blog, remove like
+            blog.likedBy.splice(likedIndex, 1);
             blog.likeCount--;
         }
 
         await blog.save();
-        res.json({ success: true, likeCount: blog.likeCount, liked: userIndex === -1 });
+        res.json({ success: true, likeCount: blog.likeCount, liked: likedIndex === -1 });
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
