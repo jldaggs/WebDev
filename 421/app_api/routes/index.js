@@ -22,6 +22,8 @@ router.put('/blog/:blogId/comments/:commentId', verifyToken, ctrlBlogs.editComme
 
 router.delete('/blog/:blogId/comments/:commentId',verifyToken, ctrlBlogs.deleteComment); // Secured
 
+router.post('/blog/:blogId/like', verifyToken, ctrlBlogs.toggleLike); // Secured
+
 router.post('/register', authController.register);
 
 router.post('/login', authController.login);
