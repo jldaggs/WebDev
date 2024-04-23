@@ -100,7 +100,11 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const { blogId } = req.params;
-    const userId = req.user._id; // Get the user ID from the session
+    const userId = req.user ? req.user._id : null;  // Check for user in session
+
+    if (!userId) {
+        return res.status(401).send('Authentication required');  // Ensures user is logged in
+    }
 
     try {
         const blog = await Blog.findById(blogId);
@@ -108,17 +112,29 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).send('Blog not found');
         }
 
-        const index = blog.likedBy.indexOf(userId);
-        if (index === -1) {
-            blog.likedBy.push(userId);
+        const likedIndex = blog.likedBy.indexOf(userId);
+        let update;
+        if (likedIndex === -1) {
+            // Add userId to likedBy if not already liked
+            update = { $addToSet: { likedBy: userId } };
         } else {
-            blog.likedBy.splice(index, 1);
+            // Remove userId from likedBy if already liked
+            update = { $pull: { likedBy: userId } };
         }
 
-        blog.likeCount = blog.likedBy.length; // Update the like count based on the array length
-        await blog.save();
-        res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
+        // Update blog document in the database
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        const isLiked = updatedBlog.likedBy.includes(userId);
+        const likeCount = updatedBlog.likedBy.length;
+
+        res.json({
+            success: true,
+            likeCount: likeCount,
+            liked: isLiked
+        });
+
     } catch (error) {
+        console.error('Failed to toggle like:', error);
         res.status(500).send('Internal Server Error');
     }
 };

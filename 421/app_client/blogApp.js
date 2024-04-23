@@ -405,7 +405,6 @@ app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $locatio
         $rootScope.$broadcast('authChange')
         $location.path('/login'); // Use $location for SPA navigation
     };
-
     // Watch for changes in authentication status to close the modal if logged in
     $rootScope.$watch(function() {
         return AuthService.isLoggedIn();
