@@ -99,8 +99,8 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const { blogId } = req.params; // Make sure 'blogId' matches the parameter name in your route
-    const userId = req.user._id;  // 'req.user' should be set by your authentication middleware
+    const { blogId } = req.params;
+    const userId = req.user._id;
 
     try {
         const blog = await Blog.findById(blogId);
@@ -108,24 +108,16 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).json({ message: "Blog not found" });
         }
 
-        // Initialize the update object outside the condition
-        const update = {
-            $addToSet: {}, // To add user ID if not present
-            $pull: {}      // To remove user ID if present
-        };
+        let wasLiked = blog.likedBy.includes(userId);
+        const update = wasLiked
+            ? { $pull: { likedBy: userId } }
+            : { $addToSet: { likedBy: userId } };
 
-        if (!blog.likedBy.includes(userId)) {
-            update.$addToSet.likedBy = userId; // Add to likedBy if not already liked
-        } else {
-            update.$pull.likedBy = userId;     // Remove from likedBy if already liked
-        }
-
-        // Perform the update atomically
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
         res.json({
             success: true,
-            likeCount: updatedBlog.likedBy.length, // Use length of likedBy for count
-            liked: updatedBlog.likedBy.includes(userId)
+            likeCount: updatedBlog.likedBy.length,
+            liked: !wasLiked  // Note the negation to reflect the toggle action
         });
     } catch (error) {
         console.error("Error toggling like:", error);
