@@ -128,8 +128,7 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
     $scope.addBlog = function() {
-        console.log("Data being sent:", $scope.blog);
-    
+        console.log("Data being sent:", JSON.stringify($scope.blog));
         $http.post('/api/blog', $scope.blog, {
             headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
         }).then(function(response) {
@@ -141,6 +140,7 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
             }
         });
     };
+    
 }]);
 
 
