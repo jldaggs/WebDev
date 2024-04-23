@@ -125,7 +125,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
 
     // Function to toggle like status
     $scope.toggleLike = function(blog) {
-        $http.post('/api/blog/' + blog._id + '/toggle-like', {}, {
+        $http.post('/api/blog/' + blog._id + '/like', {}, {
             headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
         }).then(function(response) {
             // Update like status and count
