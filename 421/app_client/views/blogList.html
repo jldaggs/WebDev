@@ -1,8 +1,6 @@
 <div ng-app="blogApp" ng-controller="blogListController">
   <div class="blog-list">
     <div class="blog-entry" ng-repeat="blog in blogs">
-      <div>Debug: isCurrentUserAuthor = {{ blog.isCurrentUserAuthor }}</div>
-
       <div class="blog-entry-title">
         {{ blog.blogTitle }}
       </div>
@@ -10,8 +8,10 @@
         {{ blog.blogText }}
       </div>
       <div class="blog-entry-date">
-        Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}       
+        Posted by {{ blog.authorName }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}       
       </div>
+      <div>{{ blog.blogAuthor }}</div>
+
       <div class="blog-entry-icons">
         <!-- Edit icon, shown only if the logged-in user is the author of the blog -->
         <a ng-href="#!/blogs/edit/{{ blog._id }}" ng-show="blog.isCurrentUserAuthor">
