@@ -2,12 +2,16 @@
   <h2 class="pageTitle">Comment on Blog: {{ blog.blogTitle }}</h2>
   
   <!-- Display blog details -->
-  <div class="blog-detail">
-    <h3>Blog: {{ blog.blogTitle }}</h3>
-    <p>{{ blog.blogText }}</p>
-    <p>Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}</p>
+  <div class="blog-entry-title">
+    {{ blog.blogTitle }}
 </div>
-  
+<div class="blog-entry-content">
+    {{ blog.blogText }}
+</div>    
+<div class="blog-entry-date">
+    Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}
+  </div>
+</div>
   <!-- Form to add a comment -->
   <form ng-submit="addComment()">
       <div class="form-group">

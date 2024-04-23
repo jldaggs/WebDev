@@ -1,12 +1,25 @@
 <div class="container mt-5" ng-controller="blogCommentListController">
     <h2 class="pageTitle">{{ blog.blogTitle }}</h2>
-    <div class="form-group blog-entry">
-        <div class="blog-entry-content">
-            {{ blog.blogText }}
-        </div>    
-        <div class="blog-entry-date">
-            Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}        </div>
+    <div class="blog-entry-title">
+        {{ blog.blogTitle }}
     </div>
+    <div class="blog-entry-content">
+        {{ blog.blogText }}
+    </div>    
+    <div class="blog-entry-date">
+        Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}
+      </div>
+      <div class="blog-entry-icons">
+        <!-- Comments icon, shown to everyone -->
+        <a ng-href="#!'/blogs/comment/add/:blogId'>
+            <i class="fa-solid fa-comment-medical"></i>          
+        </a> 
+        <!-- Like icon with like count, shown to everyone -->
+        <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
+           ng-click="toggleLike(blog)"
+           class="like-icon"></i> {{ blog.likeCount }}
+      </div>
+</div>
     <h3>Comments</h3>
     <div class="comment-list">
         <div class="comment-entry" ng-repeat="comment in blog.comments">
