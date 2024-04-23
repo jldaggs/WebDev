@@ -195,7 +195,17 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
 
 //*****************************************************************************Comments***************************************************************************************************** */
 app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 'AuthService', function($scope, $http, $routeParams, AuthService) {
+    $scope.blog = {};
     $scope.comments = [];
+
+        // Function to fetch blog by ID
+        $scope.fetchBlog = function() {
+            $http.get('/api/blog/' + $routeParams.blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+                $scope.blog = response.data;
+            }, function(error) {
+                console.error('Error fetching blog', error);
+            });
+        };
 
     // Fetch comments from the server
     $scope.fetchComments = function() {
