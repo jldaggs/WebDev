@@ -250,7 +250,9 @@ app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '
 
     // Function to fetch blog by ID
     $scope.fetchBlog = function() {
-        $http.get('/api/blog/' + $routeParams.blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+        $http.get('/api/blog/' + $routeParams.blogId, {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+        }).then(function(response) {
             $scope.blog = response.data;
         }, function(error) {
             console.error('Error fetching blog', error);
