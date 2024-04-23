@@ -106,17 +106,22 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
 
     function loadBlogs() {
         $http.get('/api/blog').then(function(response) {
-            $scope.blogs = response.data.map(blog => ({
-                ...blog,
-                isLikedByUser: blog.likedBy.includes(AuthService.getUserId()),
-                isCurrentUserAuthor: blog.blogAuthor._id === $scope.currentUserId, // Check if the author's ID matches the current user's ID
-                authorName: blog.blogAuthor.name // Add the author's name to the blog object
-            }));
-
+            console.log("Blogs fetched successfully:", response.data);
+            $scope.blogs = response.data.map(blog => {
+                const isCurrentUserAuthor = blog.blogAuthor=== $scope.currentUserId;
+                const authorName = blog.blogAuthor ? blog.blogAuthor.name : 'Unknown Author';
+                return {
+                    ...blog,
+                    isLikedByUser: blog.likedBy && blog.likedBy.includes($scope.currentUserId),
+                    isCurrentUserAuthor: isCurrentUserAuthor,
+                    authorName: authorName
+                };
+            });
         }, function(error) {
             console.error('Error fetching blogs:', error);
         });
     }
+    
     $scope.toggleLike = function(blog) {
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
@@ -397,6 +402,13 @@ app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $locatio
     $rootScope.closeLoginModal = function() {
         $rootScope.showLoginModal = false;
     };
+    $rootScope.$on('login', () => {
+        $rootScope.$broadcast('authChange');
+    });
+    $rootScope.$on('logout', () => {
+    $rootScope.$broadcast('authChange');
+    AuthService.clearToken();  // Ensure AuthService provides method to clear token
+    });
     // Global logout function
     $rootScope.logout = function() {
         AuthService.logout();
@@ -410,6 +422,10 @@ app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $locatio
         if (isLoggedIn && $rootScope.showLoginModal) {
             $rootScope.closeLoginModal();
         }
+    });
+    $rootScope.$on('authChange', function() {
+        $scope.currentUserId = AuthService.getUserId(); // Update user ID when auth changes
+        loadBlogs(); // Reload blogs to reflect the new authentication state
     });
 
     // Redirect to login if not authenticated when required
