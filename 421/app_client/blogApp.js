@@ -397,13 +397,6 @@ app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $locatio
     $rootScope.closeLoginModal = function() {
         $rootScope.showLoginModal = false;
     };
-    $rootScope.$on('login', () => {
-        $rootScope.$broadcast('authChange');
-    });
-    $rootScope.$on('logout', () => {
-        $rootScope.$broadcast('authChange');
-        AuthService.clearToken();  // Ensure AuthService provides method to clear token
-    });
     // Global logout function
     $rootScope.logout = function() {
         AuthService.logout();
