@@ -344,29 +344,11 @@ app.controller('registerController', ['$scope', '$http', '$location', 'AuthServi
     };
 }]);
 
-app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
-    // Initialize modal visibility flag
-    $rootScope.showLoginModal = false;
-
-    // Function to display the login modal
-    $rootScope.openLoginModal = function() {
-        $rootScope.showLoginModal = true;
-    };
-
-    // Function to close the login modal
-    $rootScope.closeLoginModal = function() {
-        $rootScope.showLoginModal = false;
-    };
-
-    // Function to handle login redirection
-    $rootScope.login = function() {
-        $rootScope.closeLoginModal(); // Close the modal first
-        $location.path('/login'); // Redirect to login page
-    };
-
-    // Check if user is logged in (could be used to toggle modal directly)
-    $rootScope.isLoggedIn = function() {
-        return AuthService.isLoggedIn();
+app.run(['$rootScope', 'AuthService', function($rootScope, AuthService) {
+    $rootScope.AuthService = AuthService;
+    $rootScope.logout = function() {
+        AuthService.logout();
+        window.location = '#!/login';
     };
 }]);
 
