@@ -128,12 +128,22 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
     $scope.addBlog = function() {
-        $http.post('/api/blog', $scope.blog, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+        // Log the data being sent to check its structure
+        console.log("Data being sent:", $scope.blog);
+    
+        $http.post('/api/blog', $scope.blog, {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+        }).then(function(response) {
             $location.path('/blogs');
         }, function(error) {
             console.error('Error adding blog:', error);
+            // It's helpful to log the error response data if any
+            if (error.data) {
+                console.log('Error details:', error.data);
+            }
         });
     };
+    
 }]);
 
 
@@ -160,13 +170,16 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
     }, function(error) {
         console.error('Error fetching blog:', error);
     });
-    $scope.deleteBlog = function(id) {
-        $http.delete('/api/blog/' + blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
+    $scope.deleteBlog = function() {
+        $http.delete('/api/blog/' + $routeParams.blogId, {
+            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+        }).then(function(response) {
             $location.path('/blogs');
         }, function(error) {
             console.error('Error deleting blog:', error);
         });
     };
+    
 }]);
 
 
