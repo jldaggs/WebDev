@@ -12,10 +12,6 @@ module.exports.addComment = async (req, res) => {
     const { text } = req.body;
     const { blogId } = req.params;
 
-    // Check if user data is available
-    if (!req.user || !req.user._id) {
-        return res.status(401).json({ message: "Unauthorized: User not logged in." });
-    }
     const commentAuthor = mongoose.Types.ObjectId(req.user._id);
 
     try {
