@@ -120,7 +120,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             return;
         }
     
-        $http.post('/api/blog/' + blog._id + '/toggle-like').then(function(response) {
+        $http.post('/api/blog/' + blog._id + '/like').then(function(response) {
             if (response.data.success) {
                 blog.likeCount = response.data.likeCount;
                 blog.isLikedByUser = response.data.liked;
