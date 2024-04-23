@@ -108,7 +108,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         $http.get('/api/blog').then(function(response) {
             $scope.blogs = response.data.map(blog => ({
                 ...blog,
-                isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
+                isCurrentUserAuthor: blog.blogAuthor === $scope.currentUserId
             }));
         }, function(error) {
             console.error('Error fetching blogs:', error);

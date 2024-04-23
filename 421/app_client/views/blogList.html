@@ -1,6 +1,8 @@
 <div ng-app="blogApp" ng-controller="blogListController">
   <div class="blog-list">
     <div class="blog-entry" ng-repeat="blog in blogs">
+      <div>Debug: isCurrentUserAuthor = {{ blog.isCurrentUserAuthor }}</div>
+
       <div class="blog-entry-title">
         {{ blog.blogTitle }}
       </div>
