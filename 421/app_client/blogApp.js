@@ -256,7 +256,6 @@ app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 
 
 
 app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    $scope.comment.commentAuthor = AuthService.getUserId();
     $scope.blog = {};
     $scope.comment = {};
 
