@@ -159,19 +159,37 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
 
 app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
     $scope.blog = {};
-    $http.get('/api/blog/' + $routeParams.blogId).then(function(response) {
+
+    // Correctly fetching the blog ID from the route parameters
+    var blogId = $routeParams.blogId;  // Ensure that this variable is correctly capturing the blog ID
+
+    if (!blogId) {
+        console.error('Blog ID is not available');
+        $location.path('/blogs');  // Redirect if the blog ID is not found
+        return;
+    }
+
+    $http.get('/api/blog/' + blogId).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
     });
+
     $scope.saveChanges = function() {
-        $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-            $location.path('/blogs');
-        }, function(error) {
-            console.error('Error updating blog:', error);
-        });
+        if ($scope.blog && $scope.blog._id) {
+            $http.put('/api/blog/' + $scope.blog._id, $scope.blog, {
+                headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+            }).then(function(response) {
+                $location.path('/blogs');
+            }, function(error) {
+                console.error('Error updating blog:', error);
+            });
+        } else {
+            console.error('Invalid blog data');
+        }
     };
 }]);
+
 
 
 app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
