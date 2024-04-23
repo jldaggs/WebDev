@@ -365,33 +365,26 @@ app.controller('blogCommentDeleteController', ['$scope', '$http', '$routeParams'
 
 
 //********************************************************************************User Auth****************************************************************************************************** */
-app.controller('loginController', ['$scope', '$rootScope', '$http', '$location', 'AuthService', function($scope, $rootScope, $http, $location, AuthService) {
+app.controller('loginController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.user = {};
-
     $scope.login = function() {
         $http.post('/api/login', $scope.user).then(function(response) {
-            if (response.data.token) {
-                AuthService.saveToken(response.data.token);
-                $rootScope.closeLoginModal(); // Close the modal on successful login
-                $location.path('/blogs'); // Redirect to blogs
-            } else {
-                $scope.errorMessage = "Invalid login response";
-            }
+            AuthService.saveToken(response.data.token);
+            $rootScope.$broadcast('authChange');
+            $location.path('/blogs');
         }, function(error) {
             console.error('Error during login:', error);
-            $scope.errorMessage = "Login failed: " + (error.data && error.data.message ? error.data.message : "Unknown error");
+            $scope.errorMessage = "Login failed: Invalid email or password";
         });
     };
 }]);
-
-
-
 
 app.controller('registerController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.newUser = {};
     $scope.register = function() {
         $http.post('/api/register', $scope.newUser).then(function(response) {
             AuthService.saveToken(response.data.token);
+            $rootScope.$broadcast('authChange');
             $location.path('/blogs');
         }, function(error) {
             console.error('Error during registration:', error);
