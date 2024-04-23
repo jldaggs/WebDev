@@ -117,27 +117,26 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             console.error('Error fetching blogs:', error);
         });
     }
-    loadBlogs();
+    $scope.toggleLike = function(blog) {
+        if (!AuthService.isLoggedIn()) {
+            alert('Please log in to like posts.');
+            return;
+        }
+
+        $http.post('/api/blog/' + blog._id + '/toggle-like')
+        .then(response => {
+            if (response.data.success) {
+                blog.likeCount = response.data.likeCount;
+                blog.isLikedByUser = response.data.liked;
+            }
+        })
+        .catch(error => console.error('Error toggling like:', error));
+    };
 
     $rootScope.$on('authChange', function() {
         $scope.currentUserId = AuthService.getUserId(); 
         loadBlogs(); 
     });
-    $scope.toggleLike = function(blog) {
-        if (!AuthService.isLoggedIn()) {
-            console.error('User must be logged in to like blogs');
-            return;
-        }
-
-        $http.post('/api/blog/' + blog._id + '/like', {}, {
-            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
-        }).then(function(response) {
-            blog.isLikedByUser = response.data.liked;
-            blog.likeCount = response.data.likeCount;
-        }, function(error) {
-            console.error('Error toggling like:', error);
-        });
-    };
 }]);
 
 
@@ -398,7 +397,13 @@ app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $locatio
     $rootScope.closeLoginModal = function() {
         $rootScope.showLoginModal = false;
     };
-
+    $rootScope.$on('login', () => {
+        $rootScope.$broadcast('authChange');
+    });
+    $rootScope.$on('logout', () => {
+        $rootScope.$broadcast('authChange');
+        AuthService.clearToken();  // Ensure AuthService provides method to clear token
+    });
     // Global logout function
     $rootScope.logout = function() {
         AuthService.logout();

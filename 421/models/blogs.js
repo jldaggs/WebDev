@@ -15,6 +15,10 @@ const blogSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    likeCount: {
+        type: Number,
+        default: 0 // Start with zero likes
+    },
     likedBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
