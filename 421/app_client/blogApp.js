@@ -60,12 +60,14 @@ app.factory('AuthService', ['$window', function($window) {
 
     return {
         saveToken: function(token) {
+            console.log("Saving token:", token);
+            $window.localStorage.setItem('blog-app-token', token);
             authToken = token;
-            $window.localStorage['blog-app-token'] = token;
         },
         getToken: function() {
             if (!authToken) {
-                authToken = $window.localStorage['blog-app-token'];
+                authToken = $window.localStorage.getItem('blog-app-token');
+                console.log("Retrieved token from storage:", authToken);
             }
             return authToken;
         },
@@ -305,16 +307,24 @@ app.controller('blogCommentDeleteController', ['$scope', '$http', '$routeParams'
 //********************************************************************************User Auth****************************************************************************************************** */
 app.controller('loginController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.user = {};
+    $scope.errorMessage = "";
+
     $scope.login = function() {
-        $http.post('/api/login', $scope.user).then(function(response) {
-            AuthService.saveToken(response.data.token); // Assuming the token is directly in response.data.token
-            $location.path('/blogs');
-        }, function(error) {
-            console.error('Error during login:', error);
-            $scope.errorMessage = "Login failed: Invalid email or password";
-        });
+        $http.post('/api/login', $scope.user)
+            .then(function(response) {
+                if (response.data.token) {
+                    AuthService.saveToken(response.data.token);
+                    $location.path('/blogs');  // redirect to blogs if login is successful
+                } else {
+                    $scope.errorMessage = "Invalid login response";
+                }
+            }, function(error) {
+                console.error('Error during login:', error);
+                $scope.errorMessage = "Login failed: " + (error.data.message || "Invalid email or password");
+            });
     };
 }]);
+
 
 
 app.controller('registerController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
