@@ -100,7 +100,7 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const { blogId } = req.params;
-    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
+    const userId = req.user._id;  // Make sure user is authenticated and ID is available.
 
     try {
         const blog = await Blog.findById(blogId);
@@ -108,25 +108,19 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).json({ message: "Blog not found" });
         }
 
-        const index = blog.likedBy.indexOf(userId);
-        if (index === -1) {
-            // User hasn't liked the blog yet, add their ID to likedBy
-            blog.likedBy.push(userId);
-        } else {
-            // User already liked the blog, remove their ID from likedBy
-            blog.likedBy.splice(index, 1);
-        }
+        // Check if the user has already liked the post
+        const isLiked = blog.likedBy.includes(userId);
+        const update = isLiked
+            ? { $pull: { likedBy: userId }, $inc: { likeCount: -1 } }
+            : { $addToSet: { likedBy: userId }, $inc: { likeCount: 1 } };
 
-        blog.likeCount = blog.likedBy.length; // Always recalculate based on actual array length
-        await blog.save();
-
-        res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        res.json({ success: true, likeCount: updatedBlog.likeCount, liked: !isLiked });
     } catch (error) {
         console.error("Error toggling like:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
-
 
 
 
