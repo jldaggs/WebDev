@@ -11,11 +11,11 @@
           Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}        </div>
           <div class="blog-entry-icons">
             <!-- Edit icon, shown only if the logged-in user is the author of the blog -->
-            <a ng-href="#!/blogs/edit/{{ blog._id }}" ng-show="blog.blogAuthor._id === currentUserId">
+            <a ng-href="#!/blogs/edit/{{ blog._id }}" ng-show="blog.blogAuthor === currentUserId">
               <i class="fa-solid fa-pen-to-square fa-2xl"></i>
             </a>
             <!-- Delete icon, shown only if the logged-in user is the author of the blog -->
-            <a ng-href="#!/blogs/delete/{{ blog._id }}" ng-show="blog.blogAuthor._id === currentUserId">
+            <a ng-href="#!/blogs/delete/{{ blog._id }}" ng-show="blog.blogAuthor === currentUserId">
               <i class="fa-solid fa-trash fa-2xl"></i>
             </a>
             <!-- Comments icon, shown to everyone -->
