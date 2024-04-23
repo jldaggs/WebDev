@@ -86,7 +86,15 @@ app.factory('AuthService', ['$window', function($window) {
                 return payload.exp > Date.now() / 1000; 
             }
             return false;
-        },        
+        }, 
+        getUserId: function() {
+            var token = this.getToken();
+            if (token) {
+                var payload = parseToken(token);
+                return payload.userId; 
+            }
+            return null;
+        },       
         logout: function() {
             $window.localStorage.removeItem('blog-app-token');
             authToken = null;
@@ -127,8 +135,12 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
 
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
+
+    // Initialize blogAuthor if needed
+    $scope.blog.blogAuthor = AuthService.getUserId(); // Ensure AuthService has a method to get the current user's ID.
+
     $scope.addBlog = function() {
-        console.log("Data being sent:", JSON.stringify($scope.blog));
+        console.log("Data being sent:", $scope.blog);
         $http.post('/api/blog', $scope.blog, {
             headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
         }).then(function(response) {
@@ -140,8 +152,8 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
             }
         });
     };
-    
 }]);
+
 
 
 
