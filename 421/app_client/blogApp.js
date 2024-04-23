@@ -49,50 +49,54 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
-app.factory('AuthService', ['$window', function($window) {
+app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
     var authToken = null;
 
-    function saveToken(token) {
-        $window.localStorage['blog-app-token'] = token;
-        authToken = token;
-    }
-
-    function getToken() {
-        if (!authToken) {
-            authToken = $window.localStorage['blog-app-token'];
-        }
-        return authToken;
-    }
-
-    function isLoggedIn() {
-        var token = getToken();
-        return !!token;
-    }
-
-    function getUserId() {
-        var token = getToken();
-        if (token) {
-            var payload = JSON.parse(window.atob(token.split('.')[1]));
-            return payload.userId;
-        }
-        return null;
-    }
-
-    function logout() {
-        $window.localStorage.removeItem('blog-app-token');
-        authToken = null;
-    }
-
+    function parseToken(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(base64));
+    }    
+    
     return {
-        saveToken: saveToken,
-        getToken: getToken,
-        isLoggedIn: isLoggedIn,
-        getUserId: getUserId,
-        logout: logout
+        saveToken: function(token) {
+            $window.localStorage['blog-app-token'] = token;
+            authToken = token;
+        },
+        getToken: function() {
+            if (!authToken) {
+                authToken = $window.localStorage['blog-app-token'];
+            }
+            return authToken;
+        },
+        getUserEmail: function() {
+            var token = this.getToken();
+            if (token) {
+                var decoded = parseToken(token);
+                return decoded.email; 
+            }
+            return null;
+        },
+        isLoggedIn: function() {
+            var token = this.getToken();
+            return !!token;
+
+        },
+        getUserId: function() {
+            var token = this.getToken();
+            if (token) {
+                var payload = parseToken(token);
+                return payload.userId; 
+            }
+            return null;
+        },
+        logout: function() {
+            $window.localStorage.removeItem('blog-app-token');
+            authToken = null;
+            $rootScope.$broadcast('authChange');
+        },
     };
 }]);
-
-
 
 //*********************************************************************************Blogs******************************************************************************************************* */
 app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
