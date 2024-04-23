@@ -8,22 +8,10 @@ exports.home = function(req,res) {
 
 module.exports.addComment = async (req, res) => {
     try {
-        
-        const { text } = req.body;
-        const { userId } = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
-        const newComment = new Comment({
-            text: text,
-            commentAuthor: userId 
-        });
-
-        
+        const newComment = new Comment(req.body);
         const savedComment = await newComment.save();
-
-      
-        res.status(201).json(savedComment);
+        res.status(201).json(savedComment); // Return the saved blog
     } catch (error) {
-       
-        console.error('Failed to add comment:', error);
         res.status(400).json({ error: 'Failed to add comment' });
     }
 };
