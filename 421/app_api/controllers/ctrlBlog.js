@@ -99,32 +99,34 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const blogId = req.params.blogId;
-    const userId = req.user._id;  // Assume req.user is populated from the authentication token
+    const { blogId } = req.params;
+    const userId = req.user._id; // Ensure that user ID is correctly obtained from session or token
 
     try {
         const blog = await Blog.findById(blogId);
         if (!blog) {
-            return res.status(404).send('Blog not found');
+            return res.status(404).json({ message: "Blog not found" });
         }
 
-        let likedIndex = blog.likedBy.indexOf(userId);
-        if (likedIndex === -1) {
-            // User hasn't liked the blog yet
+        const index = blog.likedBy.indexOf(userId);
+        if (index === -1) {
+            // User hasn't liked the blog yet, add their ID to likedBy
             blog.likedBy.push(userId);
-            blog.likeCount++;
+            blog.likeCount = blog.likedBy.length; // Update likeCount based on the length of likedBy
         } else {
-            // User already liked the blog, remove like
-            blog.likedBy.splice(likedIndex, 1);
-            blog.likeCount--;
+            // User already liked the blog, remove their ID from likedBy
+            blog.likedBy.splice(index, 1);
+            blog.likeCount = blog.likedBy.length; // Update likeCount based on the length of likedBy
         }
 
         await blog.save();
-        res.json({ success: true, likeCount: blog.likeCount, liked: likedIndex === -1 });
+        res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
     } catch (error) {
-        res.status(500).send('Internal Server Error');
+        console.error("Error toggling like:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 
 

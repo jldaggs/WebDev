@@ -120,14 +120,13 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             return;
         }
     
-        $http.post('/api/blog/' + blog._id + '/like', {}, {
-            headers: { 'Authorization': 'Bearer ' + AuthService.getToken() }
-        }).then(function(response) {
-            blog.likeCount = response.data.likeCount;
-            blog.isLikedByUser = response.data.liked;
+        $http.post('/api/blog/' + blog._id + '/toggle-like').then(function(response) {
+            if (response.data.success) {
+                blog.likeCount = response.data.likeCount;
+                blog.isLikedByUser = response.data.liked;
+            }
         }).catch(function(error) {
             console.error('Error toggling like:', error);
-            alert('Failed to toggle like. Please try again.');
         });
     };    
     $rootScope.$on('authChange', function() {
