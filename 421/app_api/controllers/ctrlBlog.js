@@ -97,7 +97,6 @@ module.exports.deleteComment = async (req, res) => {
 
 
 //*************************************************************************Likes Controller************************************************************************************ */
-// Inside blogs.js or a separate controller file
 module.exports.toggleLike = async (req, res) => {
     const blogId = req.params.blogId;
     const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
@@ -122,6 +121,7 @@ module.exports.toggleLike = async (req, res) => {
         await blog.save();
         res.json({ success: true, likeCount: blog.likeCount, liked: index === -1 });
     } catch (error) {
+        console.error('Error toggling like:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
