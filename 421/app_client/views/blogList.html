@@ -8,7 +8,7 @@
         {{ blog.blogText }}
       </div>
       <div class="blog-entry-date">
-        Posted by {{authorName }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}       
+        Posted by {{blog.authorName }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}       
       </div>
       <div class="blog-entry-icons">
         <!-- Edit icon, shown only if the logged-in user is the author of the blog -->
