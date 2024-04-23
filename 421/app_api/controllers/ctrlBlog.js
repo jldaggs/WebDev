@@ -99,8 +99,8 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const { blogId } = req.params;
-    const userId = req.user._id;
+    const { blogId } = req.params; // Make sure 'blogId' matches the parameter name in your route
+    const userId = req.user._id;  // 'req.user' should be set by your authentication middleware
 
     try {
         const blog = await Blog.findById(blogId);
@@ -108,23 +108,25 @@ module.exports.toggleLike = async (req, res) => {
             return res.status(404).json({ message: "Blog not found" });
         }
 
-        // Check if the user has already liked the post
-        const userIndex = blog.likedBy.indexOf(userId);
-        let liked;
-        if (userIndex === -1) {
-            // User hasn't liked the blog yet, add their ID to likedBy
-            blog.likedBy.push(userId);
-            blog.likeCount = Math.max(0, blog.likeCount) + 1;  // Ensure never going negative
-            liked = true;
+        // Initialize the update object outside the condition
+        const update = {
+            $addToSet: {}, // To add user ID if not present
+            $pull: {}      // To remove user ID if present
+        };
+
+        if (!blog.likedBy.includes(userId)) {
+            update.$addToSet.likedBy = userId; // Add to likedBy if not already liked
         } else {
-            // User already liked the blog, remove their ID from likedBy
-            blog.likedBy.splice(userIndex, 1);
-            blog.likeCount = Math.max(0, blog.likeCount - 1);  // Ensure never going negative
-            liked = false;
+            update.$pull.likedBy = userId;     // Remove from likedBy if already liked
         }
 
-        await blog.save();
-        res.json({ success: true, likeCount: blog.likeCount, liked: liked });
+        // Perform the update atomically
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        res.json({
+            success: true,
+            likeCount: updatedBlog.likedBy.length, // Use length of likedBy for count
+            liked: updatedBlog.likedBy.includes(userId)
+        });
     } catch (error) {
         console.error("Error toggling like:", error);
         res.status(500).json({ message: "Internal server error" });
