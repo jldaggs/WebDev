@@ -109,7 +109,12 @@ app.controller('blogListController', ['$scope', '$http', function($scope, $http)
     $scope.blogs = [];
     $http.get('/api/blog').then(function(response) {
         console.log(response.data);
-        $scope.blogs = response.data;
+        $scope.blogs = response.data= response.data.map(blog => {
+            return {
+                ...blog,
+                blogAuthor: blog.blogAuthor.name 
+            };
+        });
     }, function(error) {
         console.error('Error fetching blogs:', error);
     });
