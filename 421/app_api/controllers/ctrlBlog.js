@@ -11,10 +11,7 @@ exports.home = function(req,res) {
 module.exports.addComment = async (req, res) => {
     const { text } = req.body;
     const { blogId } = req.params;
-    if (!req.user || !req.user._id) {
-        return res.status(401).json({ message: "Unauthorized or invalid token" });
-    }
-    const commentAuthor = req.user._id;
+    const commentAuthor = req.user ? mongoose.Types.ObjectId(req.user._id): null;
 
     try {
         const newComment = new Comment({
