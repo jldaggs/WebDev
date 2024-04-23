@@ -23,12 +23,12 @@ const blogSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    comments: [commentSchema] // Embedding comments within the blog schema
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+    }]
 }, { timestamps: true });
 
-
-// Create a model from the schema
 const Blog = mongoose.model('Blog', blogSchema);
 
-// Export the model
 module.exports = Blog;
