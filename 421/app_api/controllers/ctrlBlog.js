@@ -1,5 +1,7 @@
 const Blog = require('../../../../WebDev/421/models/blogs');
 const Comment = require('../../../../WebDev/421/models/comments');
+const mongoose = require('mongoose');
+
 
 exports.home = function(req,res) {
     res.render('home', { title: 'Jillian Daggs Blog'});
