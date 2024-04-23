@@ -9,7 +9,7 @@ exports.home = function(req,res) {
 module.exports.addComment = async (req, res) => {
     const { blogId } = req.params; 
     const { text } = req.body; 
-    const userId = req.user ? req.user._id : null; 
+    const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
     const authorName = req.user ? req.user.name : "Anonymous"; 
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized: You must be logged in to post comments.' });
