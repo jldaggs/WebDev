@@ -11,8 +11,7 @@ module.exports.addComment = async (req, res) => {
         console.log('Request body:', req.body);  
         const { text } = req.body;
 
-        const commentAuthor = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
-
+        const commentAuthor = mongoose.Types.ObjectId(req.user._id);
         const newComment = new Comment({
             text: text,
             commentAuthor: commentAuthor
