@@ -3,6 +3,7 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
+    console.log("Verifying token:", req.headers.authorization);
     const bearerHeader = req.headers['authorization'];
     if (!bearerHeader) {
         return res.status(403).send({ message: "No token provided." });
