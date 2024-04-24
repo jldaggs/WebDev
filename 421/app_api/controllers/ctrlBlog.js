@@ -99,48 +99,32 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    console.log("Toggle like controller called for blog ID:", req.params.blogId);
-    console.log("Authorization Header:", req.headers.authorization);
     const { blogId } = req.params;
+    const userId = req.user.userId; // Adjust based on actual token payload structure
 
-    if (!blogId) {
-        return res.status(400).json({ message: "Blog ID must be provided" });
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is undefined" });
     }
 
     try {
-        const userId = req.user._id;
-        console.log("User ID attempting to toggle like:", userId);
-
         const blog = await Blog.findById(blogId);
         if (!blog) {
-            console.log("No blog found for ID:", blogId);
             return res.status(404).json({ message: "Blog not found" });
         }
 
         const wasLiked = blog.likedBy.includes(userId);
         const update = wasLiked ? { $pull: { likedBy: userId } } : { $addToSet: { likedBy: userId } };
-        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true, writeConcern: { w: "majority" } });
-        console.log("Updated blog:", updatedBlog); // This will show the updated document if any changes were made
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
 
-
-        req.app.get('io').emit('likeUpdated', {
-            blogId,
-            likeCount: updatedBlog.likedBy.length,
-            liked: !wasLiked
-        });
-
-        console.log("Like updated successfully for blog ID:", blogId);
         res.json({
             success: true,
             likeCount: updatedBlog.likedBy.length,
             liked: !wasLiked
         });
     } catch (error) {
-        console.error("Error toggling like:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error", error });
     }
 };
-
 
 
 
