@@ -100,7 +100,7 @@ module.exports.deleteComment = async (req, res) => {
 
 module.exports.toggleLike = async (req, res) => {
     const blogId = req.params.blogId;
-    const userId = req.user.userId; // This assumes the token includes a `userId` field
+    const userId = req.user.userId;
 
     if (!userId) {
         return res.status(400).json({ message: "User ID is undefined" });
@@ -116,6 +116,13 @@ module.exports.toggleLike = async (req, res) => {
         const update = wasLiked ? { $pull: { likedBy: userId } } : { $addToSet: { likedBy: userId } };
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
 
+        // Emit the updated like count and like status
+        req.app.get('io').emit('likeUpdated', {
+            blogId,
+            likeCount: updatedBlog.likedBy.length,
+            liked: !wasLiked
+        });
+
         res.json({
             success: true,
             likeCount: updatedBlog.likedBy.length,
@@ -125,6 +132,7 @@ module.exports.toggleLike = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error });
     }
 };
+
 
 
 

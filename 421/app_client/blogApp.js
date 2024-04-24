@@ -156,7 +156,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
             return;
-        }else{
+        }
         var token = AuthService.getToken();
         if (!token) {
             console.error('Authentication token is missing.');
@@ -172,13 +172,14 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
                     updatedBlog.likeCount = response.data.likeCount;
                     updatedBlog.isLikedByUser = response.data.liked;
                 }
+                $scope.$apply();  // Ensure UI updates are reflected
             }
         }).catch(function(error) {
             console.error('Error toggling like:', error);
             alert('Failed to toggle like. Please try again.');
         });
-    }
     };
+    
     
     
 
