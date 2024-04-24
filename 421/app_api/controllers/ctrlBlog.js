@@ -97,14 +97,9 @@ module.exports.deleteComment = async (req, res) => {
 
 
 //*************************************************************************Likes Controller************************************************************************************ */
-
 module.exports.toggleLike = async (req, res) => {
     const blogId = req.params.blogId;
     const userId = req.user.userId;
-
-    if (!userId) {
-        return res.status(400).json({ message: "User ID is undefined" });
-    }
 
     try {
         const blog = await Blog.findById(blogId);
@@ -113,15 +108,13 @@ module.exports.toggleLike = async (req, res) => {
         }
 
         const wasLiked = blog.likedBy.includes(userId);
-        const update = wasLiked ? { $pull: { likedBy: userId } } : { $addToSet: { likedBy: userId } };
-        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        const update = wasLiked 
+            ? { $pull: { likedBy: userId } } 
+            : { $addToSet: { likedBy: userId } };
 
-        // Emit the updated like count and like status
-        req.app.get('io').emit('likeUpdated', {
-            blogId,
-            likeCount: updatedBlog.likedBy.length,
-            liked: !wasLiked
-        });
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        updatedBlog.likeCount = updatedBlog.likedBy.length; // Update likeCount if you're explicitly storing it
+        await updatedBlog.save();
 
         res.json({
             success: true,
