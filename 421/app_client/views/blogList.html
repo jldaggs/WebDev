@@ -24,12 +24,11 @@
           <i class="fa-solid fa-comments"></i>          
         </a> 
         <!-- Like icon with like count, shown to everyone -->
-        <i ng-class="{
-          'fa-solid fa-heart': blog.isLikedByUser,
-          'fa-regular fa-heart': !blog.isLikedByUser
-        }"
+        <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
         ng-click="toggleLike(blog)"
-        class="like-icon" ng-show="AuthService.isLoggedIn()"></i> {{ blog.likeCount }}  
+        class="like-icon"
+        ng-show="AuthService.isLoggedIn()"></i> {{ blog.likeCount }}
+     
         <i class="fa-regular fa-heart" ng-hide="AuthService.isLoggedIn()"></i>    
       </div>
     </div>
