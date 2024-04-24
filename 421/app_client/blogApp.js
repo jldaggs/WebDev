@@ -153,7 +153,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
     });
 
     $scope.toggleLike = function(blog) {
-        console.log('Toggle like called');
+        console.log("Toggling like for blog:", blog._id);
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
             return;

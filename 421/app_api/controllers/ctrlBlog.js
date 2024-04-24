@@ -99,6 +99,7 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
+    console.log("Toggle Like Called for Blog ID:", req.params.blogId);
     const { blogId } = req.params;
     if (!blogId) {
         return res.status(400).json({ message: "Blog ID must be provided" });
