@@ -56,8 +56,6 @@ module.exports.updateBlog = async (req, res) => {
         if (blog.blogAuthor.toString() !== req.userId) {
             return res.status(403).json({ error: 'Unauthorized to update this blog' });
         }
-        const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
-        res.json(updatedBlog);
     } catch (error) {
         console.error("Error updating blog:", error);
         res.status(500).json({ error: 'Error updating the blog: ' + error.message });
@@ -75,12 +73,5 @@ module.exports.deleteBlog = async (req, res) => {
         if (blog.blogAuthor.toString() !== req.userId) {
             return res.status(403).json({ error: 'Unauthorized to delete this blog' });
         }
-        await Blog.findByIdAndDelete(blogId);
-        console.log("Blog successfully deleted", blogId);  // Confirm deletion in logs
-        res.json({ message: 'Blog successfully deleted' });
-    } catch (error) {
-        console.error("Error deleting blog:", error);
-        res.status(500).json({ error: 'Error deleting the blog: ' + error.message });
-    }
 
 };
