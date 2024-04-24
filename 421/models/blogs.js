@@ -1,7 +1,6 @@
 // blogs.js
 const mongoose = require('mongoose');
 
-// Define the schema for a blog entry
 const blogSchema = new mongoose.Schema({
     blogTitle: {
         type: String,
@@ -12,14 +11,26 @@ const blogSchema = new mongoose.Schema({
         required: true
     },
     blogAuthor: {
-        type: mongoose.Schema.Types.ObjectId, // Reference to User model
+
+        type: mongoose.Schema.Types.ObjectId, 
         ref: 'User',
         required: true
-    }},
-    { timestamps: true });
+    },
+    likeCount: {
+        type: Number,
+        default: 0 // Start with zero likes
+    },
+    likedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+    }]
+}, { timestamps: true });
 
-// Create a model from the schema
+
 const Blog = mongoose.model('Blog', blogSchema);
 
-// Export the model
 module.exports = Blog;

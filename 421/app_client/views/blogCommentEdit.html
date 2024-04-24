@@ -1,0 +1,38 @@
+<div class="container mt-5"  ng-controller="blogCommentEditController">
+    <h2 class="pageTitle">{{ blog.blogTitle }}</h2>
+    <div class="blog-entry">
+        <div class="blog-entry-title">{{ blog.blogTitle }}</div>
+        <div class="blog-entry-content">{{ blog.blogText }}</div>
+        <div class="blog-entry-date">
+            Posted by {{ blog.blogAuthor.name }} on {{ blog.createdAt | date:'mediumDate' }} at {{ blog.createdAt | date:'shortTime' }}
+        </div>
+        <div class="blog-entry-icons">
+            <!-- Comments icon, shown to everyone -->
+            <a ng-href="#!/blogs/comment/{{ blog._id }}">
+                <i class="fa-solid fa-comments"></i>          
+              </a>
+            <!-- Like icon with like count, shown to everyone -->
+            <i ng-class="{'fa-solid fa-heart': blog.isLikedByUser, 'fa-regular fa-heart': !blog.isLikedByUser}"
+            ng-click="toggleLike(blog)"
+            class="like-icon"></i> {{ blog.likeCount }}  
+        </div>
+    </div>
+
+  <!-- Form to edit a comment -->
+  <form ng-submit="saveChanges()" class="comment-list">
+      <div class="form-group comment-entry">
+          <label for="commentText" class="comment-entry-title">Comment:</label>
+          <textarea id="commentText" ng-model="comment.text" class="form-control comment-entry-content" rows="5" required></textarea>
+      </div>
+
+      <!-- Hidden fields for blog and comment IDs -->
+      <input type="hidden" ng-model="blog._id">
+      <input type="hidden" ng-model="comment._id">
+      
+      <div class="comment-entry-icons">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <!-- Cancel button/link -->
+          <a href="#!/blogs/comment/{{ blog._id }}" class="btn btn-secondary">Cancel</a>
+      </div>
+  </form>
+</div>
