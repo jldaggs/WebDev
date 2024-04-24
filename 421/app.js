@@ -1,8 +1,5 @@
 var createError = require('http-errors');
 var express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -46,21 +43,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-const server = http.createServer(app);
-const io = socketIo(server);
-app.set('io', io);
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-});
-
-server.listen(80, () => {
-  console.log('Server is running on port 80');
-});
-
 
 module.exports = app;
