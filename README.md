@@ -1,8 +1,10 @@
 # WebDev
 >##Lab 8 ++ (Vieable on Lab8)
 >-add comments
+>
 >##Lab 8 (main)
 >-Added likes
+>
 >## Lab 7 (niewable on Lab7)
 >-Made it so that only the author of a post can edit or delete it
 >
