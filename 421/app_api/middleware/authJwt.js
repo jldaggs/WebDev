@@ -18,7 +18,6 @@ const verifyToken = (req, res, next) => {
             return res.status(401).send({ message: "Unauthorized!" });
         }
         
-        console.log("Decoded token:", decoded);
         req.user = decoded; // This sets the entire decoded token object to req.user
         next();
     });

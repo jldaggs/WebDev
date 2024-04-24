@@ -153,31 +153,33 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
     });
 
     $scope.toggleLike = function(blog) {
-        console.log("Toggling like for blog:", blog._id);
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
             return;
-        }
+        }else{
         var token = AuthService.getToken();
         if (!token) {
             console.error('Authentication token is missing.');
             return;
         }
-        console.log("Token is:", token);
-
         $http.post('/api/blog/' + blog._id + '/like', {}, {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(function(response) {
             if (response.data.success) {
-                blog.likeCount = response.data.likeCount;
-                blog.isLikedByUser = response.data.liked;
+                // Find the blog in $scope.blogs and update it
+                let updatedBlog = $scope.blogs.find(b => b._id === blog._id);
+                if (updatedBlog) {
+                    updatedBlog.likeCount = response.data.likeCount;
+                    updatedBlog.isLikedByUser = response.data.liked;
+                }
             }
-            loadBlogs();
         }).catch(function(error) {
             console.error('Error toggling like:', error);
             alert('Failed to toggle like. Please try again.');
         });
+    }
     };
+    
     
 
     
