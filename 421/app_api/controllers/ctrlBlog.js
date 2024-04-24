@@ -99,19 +99,49 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    // existing code to toggle like...
-    const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
-    io.emit('likeUpdated', {
-        blogId: blogId,
-        likeCount: updatedBlog.likedBy.length,
-        liked: !wasLiked
-    });
-    res.json({
-        success: true,
-        likeCount: updatedBlog.likedBy.length,
-        liked: !wasLiked
-    });
+    const blogId = req.params.blogId;  // Extracting blogId from the request parameters
+
+    if (!blogId) {
+        return res.status(400).json({ message: "Blog ID must be provided" });
+    }
+
+    try {
+        // Retrieve the blog to check if the user has already liked it
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ message: "Blog not found" });
+        }
+
+        const userId = req.user._id;  // Assuming you have user ID from a session or token
+        const wasLiked = blog.likedBy.includes(userId);
+
+        // Define the update operation based on whether the user has already liked the blog
+        const update = wasLiked
+            ? { $pull: { likedBy: userId } }  // If liked, remove the user from the likedBy array
+            : { $addToSet: { likedBy: userId } };  // If not liked, add the user to the likedBy array
+
+        // Update the blog document
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        
+        // Emit an event to all connected clients via Socket.IO
+        req.app.get('io').emit('likeUpdated', {
+            blogId: blogId,
+            likeCount: updatedBlog.likedBy.length,
+            liked: !wasLiked
+        });
+
+        // Respond to the request
+        res.json({
+            success: true,
+            likeCount: updatedBlog.likedBy.length,
+            liked: !wasLiked
+        });
+    } catch (error) {
+        console.error("Error toggling like:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
+
 
 
 module.exports.toggleCommentLike = async (req, res) => {
