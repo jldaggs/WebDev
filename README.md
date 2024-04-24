@@ -2,7 +2,7 @@
 
 >## Lab 8 (main)
 >-Added likes
->## Lab 7 (niewable on Lab7)
+>## Lab 7 (viewable on Lab7)
 >-Made it so that only the author of a post can edit or delete it
 >
 >-Author name now shows in the 'created on' section of a post 
