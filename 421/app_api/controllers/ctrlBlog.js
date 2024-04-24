@@ -99,8 +99,9 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
+    console.log("Toggle like controller called for blog ID:", req.params.blogId);
+    console.log("Authorization Header:", req.headers.authorization);
     const { blogId } = req.params;
-    console.log("Received toggle like for blog ID:", blogId);
 
     if (!blogId) {
         return res.status(400).json({ message: "Blog ID must be provided" });
@@ -118,7 +119,9 @@ module.exports.toggleLike = async (req, res) => {
 
         const wasLiked = blog.likedBy.includes(userId);
         const update = wasLiked ? { $pull: { likedBy: userId } } : { $addToSet: { likedBy: userId } };
-        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true, writeConcern: { w: "majority" } });
+        console.log("Updated blog:", updatedBlog); // This will show the updated document if any changes were made
+
 
         req.app.get('io').emit('likeUpdated', {
             blogId,

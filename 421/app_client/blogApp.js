@@ -172,6 +172,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
                 blog.likeCount = response.data.likeCount;
                 blog.isLikedByUser = response.data.liked;
             }
+            loadBlogs();
         }).catch(function(error) {
             console.error('Error toggling like:', error);
             alert('Failed to toggle like. Please try again.');
