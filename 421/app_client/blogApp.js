@@ -156,29 +156,32 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
             return;
-        }
-        var token = AuthService.getToken();
-        if (!token) {
-            console.error('Authentication token is missing.');
-            return;
-        }
-        $http.post('/api/blog/' + blog._id + '/like', {}, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        }).then(function(response) {
-            if (response.data.success) {
-                // Find the blog in $scope.blogs and update it
+        }else{
+            var token = AuthService.getToken();
+    if (!token) {
+        console.error('Authentication token is missing.');
+        return;
+    }
+    $http.post('/api/blog/' + blog._id + '/like', {}, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    }).then(function(response) {
+        if (response.data.success) {
+            // Use $applyAsync to safely update the scope
+            $scope.$applyAsync(function() {
                 let updatedBlog = $scope.blogs.find(b => b._id === blog._id);
                 if (updatedBlog) {
                     updatedBlog.likeCount = response.data.likeCount;
                     updatedBlog.isLikedByUser = response.data.liked;
                 }
-                $scope.$apply();  // Ensure UI updates are reflected
-            }
-        }).catch(function(error) {
-            console.error('Error toggling like:', error);
-            alert('Failed to toggle like. Please try again.');
-        });
-    };
+            });
+        }
+    }).catch(function(error) {
+        console.error('Error toggling like:', error);
+        alert('Failed to toggle like. Please try again.');
+    });
+    }
+};
+
     
     
     
