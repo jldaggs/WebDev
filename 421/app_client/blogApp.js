@@ -158,13 +158,9 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             alert('Please log in to like posts.');
             return;
         }
-        var token = AuthService.getToken();
-        if (!token) {
-            console.error('Authentication token is missing.');
-            return;
-        }
+
         $http.post('/api/blog/' + blog._id + '/like', {}, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer` + AuthService.getToken() }
         }).then(function(response) {
             if (response.data.success) {
                 blog.likeCount = response.data.likeCount;
