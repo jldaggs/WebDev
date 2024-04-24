@@ -126,9 +126,11 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
     };
 }]);
 
+
 //*********************************************************************************Blogs******************************************************************************************************* */
 app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService','Socket', function($scope, $http, $rootScope, AuthService, Socket) {
     $scope.blogs = [];
+
 
     function loadBlogs() {
         $http.get('/api/blog').then(function(response) {
@@ -180,6 +182,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
     }).catch(function(error) {
         console.error('Error toggling like:', error);
         alert('Failed to toggle like. Please try again.');
+
     });
     }
 };
@@ -200,8 +203,6 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
 
 
 
-
-
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
 
@@ -216,9 +217,11 @@ app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthServic
             $location.path('/blogs');
         }, function(error) {
             console.error('Error adding blog:', error);
+
             if (error.data) {
                 console.log('Error details:', error.data);
             }
+
         });
     };
 }]);
@@ -255,6 +258,7 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
 
 
 app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
+
     $http.get('/api/blog/' + $routeParams.blogId).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
@@ -265,11 +269,13 @@ app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$loc
             headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
         }).then(function(response) {
             $location.path('/blogs');
+
         }, function(error) {
-            console.error('Error deleting blog:', error);
+            console.error('Error fetching blog:', error);
+            $scope.errorMessage= 'Failed to load blog: ' + error.data.error;
         });
     };
-    
+
 }]);
 
 

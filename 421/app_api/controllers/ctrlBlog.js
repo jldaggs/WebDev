@@ -171,6 +171,7 @@ module.exports.getAllBlogs = async (req, res) => {
             isLikedByUser: blog.likedBy.includes(userId)
         }));
         res.json(blogsTransformed);
+
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -180,8 +181,10 @@ module.exports.getAllBlogs = async (req, res) => {
 // Get a single blog by ID
 module.exports.getBlogById = async (req, res) => {
     try {
+
         const userId = req.user ? mongoose.Types.ObjectId(req.user._id) : null;
         const blog = await Blog.findById(req.params.blogId);
+
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
@@ -196,27 +199,42 @@ module.exports.getBlogById = async (req, res) => {
 // Add a new blog
 module.exports.createBlog = async (req, res) => {
     try {
-        const newBlog = new Blog(req.body);
+        const newBlog = new Blog({
+            blogTitle: req.body.blogTitle,
+            blogText: req.body.blogText,
+            blogAuthor: req.userId // Ensure this matches the decoded token
+        });
+    
         const savedBlog = await newBlog.save();
-        res.status(201).json(savedBlog); // Return the saved blog
+        res.status(201).json(savedBlog);
     } catch (error) {
+        console.log("Error in creating blog:", error);
         res.status(400).json({ error: 'Failed to add blog' });
     }
 };
 
 
 module.exports.updateBlog = async (req, res) => {
+    const blogId = req.params.id;
     try {
+
         const blogId = req.params.blogId;
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
         if (!updatedBlog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
-        res.json(updatedBlog); // Return the updated blog
+
+        if (blog.blogAuthor.toString() !== req.userId) {
+            return res.status(403).json({ error: 'Unauthorized to update this blog' });
+        }
+        const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, { new: true });
+        res.json(updatedBlog);
     } catch (error) {
-        res.status(500).json({ error: 'Error updating the blog' });
+        console.error("Error updating blog:", error);
+        res.status(500).json({ error: 'Error updating the blog: ' + error.message });
     }
 };
+
 
 
     module.exports.deleteBlog = async (req, res) => {
@@ -226,5 +244,14 @@ module.exports.updateBlog = async (req, res) => {
             res.json({ message: 'Blog successfully deleted' });
         } catch (error) {
             res.status(500).json({ error: 'Error deleting the blog' });
+
         }
-    };
+        await Blog.findByIdAndDelete(blogId);
+        console.log("Blog successfully deleted", blogId);  // Confirm deletion in logs
+        res.json({ message: 'Blog successfully deleted' });
+    } catch (error) {
+        console.error("Error deleting blog:", error);
+        res.status(500).json({ error: 'Error deleting the blog: ' + error.message });
+    }
+
+};

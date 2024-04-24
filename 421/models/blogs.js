@@ -11,6 +11,7 @@ const blogSchema = new mongoose.Schema({
         required: true
     },
     blogAuthor: {
+
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User',
         required: true
@@ -28,6 +29,7 @@ const blogSchema = new mongoose.Schema({
         ref: 'Comment'
     }]
 }, { timestamps: true });
+
 
 const Blog = mongoose.model('Blog', blogSchema);
 

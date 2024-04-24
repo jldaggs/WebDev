@@ -35,7 +35,7 @@ a {
   border: 1px solid #dee2e6;
   margin-bottom: 20px; /* Space between entries */
   padding: 15px;
-  border-radius: 5px; /* Rounded corners */
+  border-radius: 15px; /* Rounded corners */
 }
 
 /* Style the title of each blog entry */
@@ -64,8 +64,11 @@ a {
 }
 
 .blog-entry-icons a {
+
   margin: 0 10px; 
   color: #022652; 
+
+
   text-decoration: none;
 }
 
@@ -91,14 +94,15 @@ a {
 
 .btn-primary {
   color: #fff;
-  background-color: darkcyan; /* Use your anchor color for the button */
-  border-color: darkcyan; /* Use your anchor color for the border */
+  background-color: #033169;
+  border-color: #033169;
 }
 
 .btn-primary:hover {
-  background-color: #005f60; /* Darken the color slightly on hover */
-  border-color: #004d4e; /* Darken the border color slightly on hover */
+  background-color: #032652; 
+  border-color: #032652; 
 }
+
 
 .login-modal {
   display: block; /* Hidden by default, shown when ng-show evaluates to true */
@@ -120,6 +124,7 @@ a {
   border: 1px solid #888;
   width: 80%; /* Could be more or less, depending on screen size */
 }
+
 
 
 
