@@ -1,8 +1,8 @@
 # WebDev
->##Lab 8 ++ (Vieable on Lab8)
+>## Lab 8 ++ (Vieable on Lab8)
 >-add comments
 >
->##Lab 8 (main)
+>## Lab 8 (main)
 >-Added likes
 >
 >## Lab 7 (niewable on Lab7)
