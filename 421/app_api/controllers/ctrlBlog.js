@@ -99,16 +99,20 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    console.log("Toggle Like Called for Blog ID:", req.params.blogId);
     const { blogId } = req.params;
+    console.log("Received toggle like for blog ID:", blogId);
+
     if (!blogId) {
         return res.status(400).json({ message: "Blog ID must be provided" });
     }
 
     try {
-        const userId = req.user._id; // Ensure user is authenticated
+        const userId = req.user._id;
+        console.log("User ID attempting to toggle like:", userId);
+
         const blog = await Blog.findById(blogId);
         if (!blog) {
+            console.log("No blog found for ID:", blogId);
             return res.status(404).json({ message: "Blog not found" });
         }
 
@@ -122,6 +126,7 @@ module.exports.toggleLike = async (req, res) => {
             liked: !wasLiked
         });
 
+        console.log("Like updated successfully for blog ID:", blogId);
         res.json({
             success: true,
             likeCount: updatedBlog.likedBy.length,
@@ -132,6 +137,7 @@ module.exports.toggleLike = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 
 
