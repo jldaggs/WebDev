@@ -1,9 +1,13 @@
 # WebDev
->## Lab 7 (main)
+>##Lab 8 ++ (Vieable on Lab8)
+>-add comments
+>##Lab 8 (main)
+>-Added likes
+>## Lab 7 (niewable on Lab7)
 >-Made it so that only the author of a post can edit or delete it
 >
 >-Author name now shows in the 'created on' section of a post 
->## Lab 6 (viewable of branch Lab6)
+>## Lab 6 (viewable on branch Lab6)
 >-Added accounts and a Login and Register page
 >
 >-Only logged in users can update and delete blog posts
