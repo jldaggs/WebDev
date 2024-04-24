@@ -99,8 +99,8 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const { blogId } = req.params;
-    const userId = req.user.userId; // Adjust based on actual token payload structure
+    const blogId = req.params.blogId;
+    const userId = req.user.userId; // This assumes the token includes a `userId` field
 
     if (!userId) {
         return res.status(400).json({ message: "User ID is undefined" });
