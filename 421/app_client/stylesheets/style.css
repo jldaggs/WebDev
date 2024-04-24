@@ -56,41 +56,17 @@ a {
   color: #6c757d;
 }
 
+/* Style the edit and delete icons */
 .blog-entry-icons {
   display: flex;
-  align-items: center; /* Align icons vertically */
-  justify-content: flex-end; /* Align icons to the right */
-  gap: 10px; /* Add space between icons */
+  justify-content: flex-end;
 }
 
 .blog-entry-icons a {
-
-  margin: 0 10px; 
-  color: #022652; 
-
-
+  color: #033169;
   text-decoration: none;
+  margin-left: 30px;
 }
-
-.blog-entry-icons i {
-  font-size: 1.5em; 
-}
-
-.blog-entry-icons a:hover, .blog-entry-icons a:focus {
-  color: #011227; /* Darker shade of the original color */
-}
-
-
-.like-icon {
-  pointer-events: auto;  
-}
-
-@media (max-width: 600px) {
-  .blog-entry-icons {
-    justify-content: space-between; 
-  }
-}
-
 
 .btn-primary {
   color: #fff;
@@ -103,29 +79,13 @@ a {
   border-color: #032652; 
 }
 
-
-.login-modal {
-  display: block; /* Hidden by default, shown when ng-show evaluates to true */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+a.btn.btn-secondary {
+  color: #fff;
+  background-color: #79828d;
+  border-color: #79828d;
 }
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+a.btn.btn-secondary:hover {
+  background-color: #5d646d; 
+  border-color: #5d646d; 
 }
-
-
-
-
 

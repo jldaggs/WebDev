@@ -12,29 +12,13 @@ app.config(['$routeProvider', function($routeProvider) {
             templateUrl: 'views/blogAdd.html',
             controller: 'blogAddController'
         })
-        .when('/blogs/edit/:blogId', {
+        .when('/blogs/edit/:id', {
             templateUrl: 'views/blogEdit.html',
             controller: 'blogEditController'
         })
-        .when('/blogs/delete/:blogId', {
+        .when('/blogs/delete/:id', {
             templateUrl: 'views/blogDelete.html',
             controller: 'blogDeleteController'
-        })
-        .when('/blogs/comment/:blogId',{
-            templateUrl: 'views/blogCommentList.html',
-            controller: 'blogCommentListController'
-        })
-        .when('/blogs/comment/add/:blogId', {
-            templateUrl: 'views/blogCommentAdd.html',
-            controller: 'blogCommentAddController'
-        })
-        .when('/blogs/comment/edit/:blogId/:commentId', {
-            templateUrl: 'views/blogCommentEdit.html',
-            controller: 'blogCommentEditController'
-        })
-        .when('/blogs/comment/delete/:blogId/:commentId', {
-            templateUrl: 'views/blogCommentDelete.html',
-            controller: 'blogCommentDeleteController'
         })
         .when('/login', {
             templateUrl: 'views/login.html',
@@ -49,34 +33,7 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
-angular.module('blogApp').factory('Socket', ['$rootScope', function($rootScope) {
-    var socket = io.connect();
-    return {
-        on: function(eventName, callback) {
-            socket.on(eventName, function() {
-                var args = arguments;
-                $rootScope.$apply(function() {
-                    callback.apply(socket, args);
-                });
-            });
-        },
-        emit: function(eventName, data, callback) {
-            socket.emit(eventName, data, function() {
-                var args = arguments;
-                $rootScope.$apply(function() {
-                    if (callback) {
-                        callback.apply(socket, args);
-                    }
-                });
-            });
-        },
-        off: function(eventName, callback) {  // Add this method if it's not present
-            socket.off(eventName, callback);
-        }
-    };
-}]);
-
-
+// AuthService for managing authentication
 app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
     var authToken = null;
 
@@ -126,112 +83,48 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
     };
 }]);
 
-
-//*********************************************************************************Blogs******************************************************************************************************* */
-app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService','Socket', function($scope, $http, $rootScope, AuthService, Socket) {
+// Controllers for blog operations
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
     $scope.blogs = [];
-
+    $scope.currentUserId = AuthService.getUserId(); 
 
     function loadBlogs() {
         $http.get('/api/blog').then(function(response) {
             $scope.blogs = response.data.map(blog => ({
                 ...blog,
-                isLikedByUser: blog.likedBy.includes(AuthService.getUserId()),
-                isCurrentUserAuthor: blog.blogAuthor._id === AuthService.getUserId(),
-                authorName: blog.blogAuthor ? blog.blogAuthor.name : 'Unknown Author'
+                isCurrentUserAuthor: blog.blogAuthor && blog.blogAuthor._id === $scope.currentUserId
             }));
+        }, function(error) {
+            console.error('Error fetching blogs:', error);
         });
     }
 
-    var likeUpdatedListener = function(data) {
-        var blog = $scope.blogs.find(b => b._id === data.blogId);
-        if (blog) {
-            blog.likeCount = data.likeCount;
-            blog.isLikedByUser = data.liked;
-        }
-    };
-    
-    Socket.on('likeUpdated', likeUpdatedListener);
-    
-    $scope.$on('$destroy', function() {
-        Socket.off('likeUpdated', likeUpdatedListener); // Correct method to remove event listener
-    });
-    $scope.toggleLike = function(blog) {
-        if (!AuthService.isLoggedIn()) {
-            alert('Please log in to like posts.');
-            return;
-        }else{
-            var token = AuthService.getToken();
-    if (!token) {
-        console.error('Authentication token is missing.');
-        return;
-    }
-    $http.post('/api/blog/' + blog._id + '/like', {}, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    }).then(function(response) {
-        if (response.data.success) {
-            // Use $applyAsync to safely update the scope
-            $scope.$applyAsync(function() {
-                let updatedBlog = $scope.blogs.find(b => b._id === blog._id);
-                if (updatedBlog) {
-                    updatedBlog.likeCount = response.data.likeCount;
-                    updatedBlog.isLikedByUser = response.data.liked;
-                }
-            });
-        }
-    }).catch(function(error) {
-        console.error('Error toggling like:', error);
-        alert('Failed to toggle like. Please try again.');
-
-    });
-    }
-};
-
-    
-    
-    
-
-    
-    
-    $rootScope.$on('authChange', function() {
-        loadBlogs();  // This will reload the blogs whenever the authentication state changes
-    });
-    
-
+  
     loadBlogs();
-}]);
 
+
+    $rootScope.$on('authChange', function() {
+        $scope.currentUserId = AuthService.getUserId(); 
+        loadBlogs(); 
+    });
+}]);
 
 
 app.controller('blogAddController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.blog = {};
-
-    // Initialize blogAuthor if needed
-    $scope.blog.blogAuthor = AuthService.getUserId(); // Ensure AuthService has a method to get the current user's ID.
-
     $scope.addBlog = function() {
-        console.log("Data being sent:", $scope.blog);
-        $http.post('/api/blog', $scope.blog, {
-            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
-        }).then(function(response) {
+        $http.post('/api/blog', $scope.blog, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
             $location.path('/blogs');
         }, function(error) {
             console.error('Error adding blog:', error);
-
-            if (error.data) {
-                console.log('Error details:', error.data);
-            }
-
+            $scope.errorMessage = "Error adding blog" + error.data.error;
         });
     };
 }]);
 
-
-
-
 app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
     $scope.blog = {};
-    $http.get('/api/blog/' + $routeParams.blogId).then(function(response) {
+    $http.get('/api/blog/' + $routeParams.id).then(function(response) {
         $scope.blog = response.data;
     }, function(error) {
         console.error('Error fetching blog:', error);
@@ -255,185 +148,43 @@ app.controller('blogEditController', ['$scope', '$http', '$routeParams', '$locat
     };
 }]);
 
-
-
 app.controller('blogDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-
-    $http.get('/api/blog/' + $routeParams.blogId).then(function(response) {
-        $scope.blog = response.data;
-    }, function(error) {
-        console.error('Error fetching blog:', error);
-    });
-    $scope.deleteBlog = function() {
-        $http.delete('/api/blog/' + $routeParams.blogId, {
-            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
-        }).then(function(response) {
-            $location.path('/blogs');
-
+    $scope.loadBlogDetails = function() {
+        $http.get('/api/blog/' + $routeParams.id).then(function(response) {
+            $scope.blog = response.data;
         }, function(error) {
             console.error('Error fetching blog:', error);
             $scope.errorMessage= 'Failed to load blog: ' + error.data.error;
         });
     };
 
+    $scope.deleteBlog = function() {
+            $http.delete('/api/blog/' + $routeParams.id, {
+                headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
+            }).then(function(response) {
+                $location.path('/blogs'); // Redirect after delete
+            }, function(error) {
+                $scope.errorMessage = 'Error deleting blog:', error.data.error;
+                $scope.errorMessage = 'Failed to delete blog: ' + error.data.error;
+            });
+    };
+
+    $scope.loadBlogDetails();
 }]);
 
-
-//*****************************************************************************Comments***************************************************************************************************** */
-app.controller('blogCommentListController', ['$scope', '$http', '$routeParams', 'AuthService', function($scope, $http, $routeParams, AuthService) {
-    $scope.blog = {};
-    $scope.comments = [];
-
-    // Function to fetch blog by ID
-    $scope.fetchBlog = function() {
-        $http.get('/api/blog/' + $routeParams.blogId, {headers: {'Authorization': 'Bearer ' + AuthService.getToken()}}).then(function(response) {
-            $scope.blog = response.data;
-        }, function(error) {
-            console.error('Error fetching blog', error);
-        });
-    };
-
-    // Fetch comments from the server
-    $scope.fetchComments = function() {
-        $http.get(`/api/blog/${$routeParams.blogId}/comments`).then(function(response) {
-            $scope.comments = response.data;
-        }, function(error) {
-            console.error('Error fetching comments:', error);
-        });
-    };
-
-    // Initialize the fetching process for both blog and comments
-    $scope.fetchBlog();
-    $scope.fetchComments();
-
-}]);
-
-
-
-app.controller('blogCommentAddController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    
-    $scope.comment = {};
-
-    $scope.fetchData = function() {
-        // Fetch the blog
-        $http.get(`/api/blog/${$routeParams.blogId}`).then(function(response) {
-            $scope.blog = response.data;
-        }, function(error) {
-            console.error('Error fetching blog:', error);
-        });
-    };
-
-    $scope.addComment = function() {
-        $http.post('/api/blog/' + $routeParams.blogId + '/comments', $scope.comment, {
-            headers: { 'Authorization': 'Bearer ' + AuthService.getToken() }
-        }).then(function(response) {
-            $location.path('/blogs/comment/' + $routeParams.blogId); // Redirect after successful post
-        }, function(error) {
-            console.error('Error adding comment:', error);
-        });
-    };
-
- 
-    $scope.fetchData();
-}]);
-
-
-
-app.controller('blogCommentEditController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    $scope.blog = {};
-    $scope.comment = {};
-
-    // Fetch the blog and the comment
-    $scope.fetchData = function() {
-        // Fetch the blog
-        $http.get(`/api/blog/${$routeParams.blogId}`).then(function(response) {
-            $scope.blog = response.data;
-        }, function(error) {
-            console.error('Error fetching blog:', error);
-        });
-
-        // Fetch the specific comment
-        $http.get(`/api/blog/${$routeParams.blogId}/comments/${$routeParams.commentId}`).then(function(response) {
-            $scope.comment = response.data;
-        }, function(error) {
-            console.error('Error fetching comment:', error);
-        });
-    };
-
-    // Update the comment
-    $scope.saveChanges = function() {
-        $http.put(`/api/blog/${$routeParams.blogId}/comments/${$routeParams.commentId}`, $scope.comment, {
-            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
-        }).then(function(response) {
-            $location.path(`/blogs/comment/${$routeParams.blogId}`);
-        }, function(error) {
-            console.error('Error updating comment:', error);
-        });
-    };
-
-    // Call fetch data on controller initialization
-    $scope.fetchData();
-}]);
-
-app.controller('blogCommentDeleteController', ['$scope', '$http', '$routeParams', '$location', 'AuthService', function($scope, $http, $routeParams, $location, AuthService) {
-    $scope.blog = {};
-    $scope.comment = {};
-
-    // Fetch the blog and the specific comment
-    $scope.fetchData = function() {
-        // Fetch the blog
-        $http.get(`/api/blog/${$routeParams.blogId}`).then(function(response) {
-            $scope.blog = response.data;
-        }, function(error) {
-            console.error('Error fetching blog:', error);
-        });
-
-        // Fetch the specific comment
-        $http.get(`/api/blog/${$routeParams.blogId}/comments/${$routeParams.commentId}`).then(function(response) {
-            $scope.comment = response.data;
-        }, function(error) {
-            console.error('Error fetching comment:', error);
-        });
-    };
-
-    // Delete the comment
-    $scope.deleteComment = function() {
-        $http.delete(`/api/blog/${$routeParams.blogId}/comments/${$routeParams.commentId}`, {
-            headers: {'Authorization': 'Bearer ' + AuthService.getToken()}
-        }).then(function(response) {
-            $location.path(`/blogs/comment/${$routeParams.blogId}`);
-        }, function(error) {
-            console.error('Error deleting comment:', error);
-        });
-    };
-
-    // Call fetch data on controller initialization
-    $scope.fetchData();
-}]);
-
-
-//********************************************************************************User Auth****************************************************************************************************** */
-app.controller('loginController', ['$scope', '$rootScope', '$http', '$location', 'AuthService', function($scope, $rootScope, $http, $location, AuthService) {
+// Controllers for user authentication
+app.controller('loginController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.user = {};
-
     $scope.login = function() {
         $http.post('/api/login', $scope.user).then(function(response) {
-            if (response.data.token) {
-                AuthService.saveToken(response.data.token);
-                $rootScope.closeLoginModal(); // Close the modal on successful login
-                $location.path('/blogs'); // Redirect to blogs
-            } else {
-                $scope.errorMessage = "Invalid login response";
-            }
+            AuthService.saveToken(response.data.token);
+            $location.path('/blogs');
         }, function(error) {
             console.error('Error during login:', error);
-            $scope.errorMessage = "Login failed: " + (error.data && error.data.message ? error.data.message : "Unknown error");
+            $scope.errorMessage = "Login failed: Invalid email or password";
         });
     };
 }]);
-
-
-
 
 app.controller('registerController', ['$scope', '$http', '$location', 'AuthService', function($scope, $http, $location, AuthService) {
     $scope.newUser = {};
@@ -448,56 +199,12 @@ app.controller('registerController', ['$scope', '$http', '$location', 'AuthServi
     };
 }]);
 
-app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
-    // Assign AuthService to rootScope for global access
+// Make AuthService globally accessible
+app.run(['$rootScope', 'AuthService', function($rootScope, AuthService) {
     $rootScope.AuthService = AuthService;
-
-    // Modal visibility flag
-    $rootScope.showLoginModal = false;
-
-    // Function to open the login modal
-    $rootScope.openLoginModal = function() {
-        $rootScope.showLoginModal = true;
-    };
-
-    // Function to close the login modal
-    $rootScope.closeLoginModal = function() {
-        $rootScope.showLoginModal = false;
-    };
-
-    // Logout function handling
     $rootScope.logout = function() {
-        AuthService.logout(); // Ensure logout clears the token
-        $rootScope.$broadcast('authChange');
-        $location.path('/login'); // Redirect to login page
+        AuthService.logout();
+        window.location = '#!/login';
     };
-
-    // Event for when a user logs in
-    $rootScope.$on('login', function() {
-        $rootScope.$broadcast('authChange');
-    });
-
-    // Event for when a user logs out
-    $rootScope.$on('logout', function() {
-        AuthService.clearToken(); // Clear the authentication token
-        $rootScope.$broadcast('authChange');
-    });
-
-    // Watch for changes in authentication status to close the modal if logged in
-    $rootScope.$watch(function() {
-        return AuthService.isLoggedIn();
-    }, function(isLoggedIn) {
-        if (isLoggedIn && $rootScope.showLoginModal) {
-            $rootScope.closeLoginModal();
-        }
-    });
-
-    // Redirect to login if not authenticated when required
-    $rootScope.$on('$routeChangeStart', function(event, next, current) {
-        if (next.requiresAuth && !AuthService.isLoggedIn()) {
-            event.preventDefault(); // Prevent navigating to the route
-            $rootScope.openLoginModal(); // Show login modal instead
-        }
-    });
 }]);
 
