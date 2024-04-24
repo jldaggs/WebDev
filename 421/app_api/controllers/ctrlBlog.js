@@ -99,32 +99,19 @@ module.exports.deleteComment = async (req, res) => {
 //*************************************************************************Likes Controller************************************************************************************ */
 
 module.exports.toggleLike = async (req, res) => {
-    const { blogId } = req.params;
-    const userId = req.user._id;
-
-    try {
-        const blog = await Blog.findById(blogId);
-        if (!blog) {
-            return res.status(404).json({ message: "Blog not found" });
-        }
-
-        let wasLiked = blog.likedBy.includes(userId);
-        const update = wasLiked
-            ? { $pull: { likedBy: userId } }
-            : { $addToSet: { likedBy: userId } };
-
-        const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
-        res.json({
-            success: true,
-            likeCount: updatedBlog.likedBy.length,
-            liked: !wasLiked  // Note the negation to reflect the toggle action
-        });
-    } catch (error) {
-        console.error("Error toggling like:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+    // existing code to toggle like...
+    const updatedBlog = await Blog.findByIdAndUpdate(blogId, update, { new: true });
+    io.emit('likeUpdated', {
+        blogId: blogId,
+        likeCount: updatedBlog.likedBy.length,
+        liked: !wasLiked
+    });
+    res.json({
+        success: true,
+        likeCount: updatedBlog.likedBy.length,
+        liked: !wasLiked
+    });
 };
-
 
 
 module.exports.toggleCommentLike = async (req, res) => {

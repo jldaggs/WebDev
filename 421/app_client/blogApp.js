@@ -49,6 +49,30 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
+angular.module('blogApp').factory('Socket', ['$rootScope', function($rootScope) {
+    var socket = io.connect();
+    return {
+        on: function(eventName, callback) {
+            socket.on(eventName, function() {
+                var args = arguments;
+                $rootScope.$apply(function() {
+                    callback.apply(socket, args);
+                });
+            });
+        },
+        emit: function(eventName, data, callback) {
+            socket.emit(eventName, data, function() {
+                var args = arguments;
+                $rootScope.$apply(function() {
+                    if (callback) {
+                        callback.apply(socket, args);
+                    }
+                });
+            });
+        }
+    };
+}]);
+
 app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScope) {
     var authToken = null;
 
@@ -99,7 +123,7 @@ app.factory('AuthService', ['$window', '$rootScope', function($window, $rootScop
 }]);
 
 //*********************************************************************************Blogs******************************************************************************************************* */
-app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService', function($scope, $http, $rootScope, AuthService) {
+app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthService','Socket', function($scope, $http, $rootScope, AuthService, Socket) {
     $scope.blogs = [];
 
     function loadBlogs() {
@@ -113,18 +137,30 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         });
     }
 
+    var likeUpdatedListener = function(data) {
+        var blog = $scope.blogs.find(b => b._id === data.blogId);
+        if (blog) {
+            blog.likeCount = data.likeCount;
+            blog.isLikedByUser = data.liked;
+        }
+    };
+
+    Socket.on('likeUpdated', likeUpdatedListener);
+
+    $scope.$on('$destroy', function() {
+        Socket.removeListener('likeUpdated', likeUpdatedListener);
+    });
+
     $scope.toggleLike = function(blog) {
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
             return;
         }
-    
-        const token = AuthService.getToken();
+        var token = AuthService.getToken();
         if (!token) {
             console.error('Authentication token is missing.');
             return;
         }
-    
         $http.post('/api/blog/' + blog._id + '/like', {}, {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(function(response) {
@@ -137,6 +173,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             alert('Failed to toggle like. Please try again.');
         });
     };
+
     
     
     $rootScope.$on('authChange', function() {
