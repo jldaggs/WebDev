@@ -78,6 +78,10 @@ a {
 }
 
 
+.like-icon {
+  pointer-events: auto;  
+}
+
 @media (max-width: 600px) {
   .blog-entry-icons {
     justify-content: space-between; 
