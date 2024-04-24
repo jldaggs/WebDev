@@ -137,6 +137,7 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
         });
     }
 
+
     var likeUpdatedListener = function(data) {
         var blog = $scope.blogs.find(b => b._id === data.blogId);
         if (blog) {
@@ -152,6 +153,9 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
     });
 
     $scope.toggleLike = function(blog) {
+        console.log('Toggle like called');
+
+        $scope.$apply(function() {
         if (!AuthService.isLoggedIn()) {
             alert('Please log in to like posts.');
             return;
@@ -172,6 +176,8 @@ app.controller('blogListController', ['$scope', '$http', '$rootScope', 'AuthServ
             console.error('Error toggling like:', error);
             alert('Failed to toggle like. Please try again.');
         });
+    });
+
     };
 
     
